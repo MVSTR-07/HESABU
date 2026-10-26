@@ -14,3 +14,9 @@
 - A future account service may store email and subscription status only. Stage 1 uses clearly marked local demo account/subscription stubs.
 - Include confirmed local database/cache deletion, KES, dd/MM/yyyy, light/dark themes, fabricated samples, and meaningful privacy/storage tests.
 - Keep lib/core pure Dart; lib/data handles storage; lib/features owns tools; lib/ui holds shared widgets; lib/ai contains the removable disabled interface.
+
+## Confirmed GUI reference
+- Use the user's Canva design "HESABU desktop UI screens" (20 pages) as the visual reference: https://canva.link/ftnb5ru4rh22mj7 (design ID DAHZG3wZbPQ).
+- The reference was accessed successfully through Canva. Its styling has not yet been applied to the Flutter scaffold.
+- The user instructed us to wait for further instructions before interface changes or Stage 2. Finish only any outstanding Stage 1 work.
+- Stage 1 source was committed and pushed as 027f6ca; 11 tests and static analysis passed. Windows manual testing is still blocked by the missing Visual Studio C++ toolchain; do not claim a native build or device-vault integration test passed.
