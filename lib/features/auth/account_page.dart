@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../app_controller.dart';
 
+// TODO(real-auth): Keep the visible DEMO warning until genuine verified sign-in
+// is connected. No password input, password storage, or password logging here.
 class AccountPage extends StatefulWidget {
   const AccountPage({required this.controller, super.key});
   final AppController controller;

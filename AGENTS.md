@@ -19,4 +19,5 @@
 - Use the user's Canva design "HESABU desktop UI screens" (20 pages) as the visual reference: https://canva.link/ftnb5ru4rh22mj7 (design ID DAHZG3wZbPQ).
 - The reference was accessed successfully through Canva. Its styling has not yet been applied to the Flutter scaffold.
 - The user instructed us to wait for further instructions before interface changes or Stage 2. Finish only any outstanding Stage 1 work.
-- Stage 1 source was committed and pushed as 027f6ca; 11 tests and static analysis passed. Windows manual testing is still blocked by the missing Visual Studio C++ toolchain; do not claim a native build or device-vault integration test passed.
+- Stage 1 now builds and runs on Windows. Visual Studio Build Tools 2026 with MSVC, CMake, Windows SDK and ATL is installed; no reboot required. Windows doctor checks, 11 unit/widget tests, static analysis and real Windows secure-storage integration test passed. See docs/validation.md and docs/evidence/.
+- Stage 1 is NOT signed off until the user runs the manual checklist and explicitly confirms. Do not start Canva styling or Stage 2 before that confirmation.

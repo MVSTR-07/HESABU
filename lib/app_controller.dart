@@ -6,6 +6,11 @@ enum AppPage { intro, account, dashboard, settings }
 
 /// Local-only demo identity and entitlement. No server, payment or password
 /// handling exists in Stage 1. A future auth adapter must accept email only.
+// TODO(real-auth): Replace this email-only DEMO STUB with verified authentication.
+// Never collect or persist plaintext passwords. The account service may retain
+// email and subscription status only; business data must stay on-device.
+// TODO(real-subscription): Replace demo_paid with verified entitlement before
+// production. This local switch is not billing or access security.
 class AppController extends ChangeNotifier {
   AppController(this.store) {
     email = store.readSetting('account_email');

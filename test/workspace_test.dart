@@ -17,6 +17,11 @@ void main() {
     controller.setDemoPaid(true);
     controller.seedSamples();
     controller.signOut();
+    expect(
+      store.values.keys,
+      unorderedEquals(['account_email', 'signed_in', 'demo_paid']),
+      reason: 'Demo identity/plan must never persist a password or credential.',
+    );
     expect(store.sampleCount, 12);
     final restored = AppController(store);
     expect(restored.signedIn, isFalse);

@@ -20,7 +20,8 @@ finds either that SDK or a normal Flutter installation on PATH.
 
 If Flutter is on PATH these are standard `flutter` commands. A Windows run/build
 requires Developer Mode and Visual Studio with **Desktop development with C++**,
-including CMake, MSVC and a Windows SDK. VS Code is the editor; it does not replace
+including CMake, MSVC, a Windows SDK and **C++ ATL for the installed toolset**
+(required by Windows secure key storage). VS Code is the editor; it does not replace
 these native compiler tools. Android later requires the Android SDK and a device.
 
 ## What Stage 1 includes
