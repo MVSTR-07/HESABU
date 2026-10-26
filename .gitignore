@@ -14,3 +14,28 @@ temp/
 # Operating system files
 Thumbs.db
 .DS_Store
+
+# Flutter / native build outputs
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+coverage/
+windows/flutter/ephemeral/
+android/.gradle/
+android/local.properties
+android/key.properties
+android/app/debug/
+android/app/profile/
+android/app/release/
+*.jks
+*.keystore
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+.tools/
+.idea/
+*.iml
+.vscode/settings.json
