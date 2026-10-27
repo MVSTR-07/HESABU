@@ -4,8 +4,8 @@ publish_to: none
 version: 0.1.0+1
 
 environment:
-  sdk: '>=3.10.0 <4.0.0'
-  flutter: '>=3.38.0'
+  sdk: '>=3.13.0 <4.0.0'
+  flutter: '>=3.47.0'
 
 dependencies:
   flutter:
@@ -15,6 +15,13 @@ dependencies:
   path: ^1.9.1
   path_provider: ^2.1.5
   sqlite3: ^3.8.0
+  crypto: ^3.0.8
+  file_selector: ^1.1.0
+  pdfrx_engine: ^0.8.0
+  pdfium_flutter: ^0.4.0
+  pdfium_dart: ^0.4.0
+  ffi: ^2.2.0
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:
@@ -25,6 +32,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  shaders:
+    - shaders/glass_refraction.frag
 
 # Bundle encryption-capable SQLite on Windows AND Android. Never replace this
 # with plain sqlite3: startup and tests deliberately fail without SQLCipher.

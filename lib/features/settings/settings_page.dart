@@ -1,18 +1,42 @@
 import 'package:flutter/material.dart';
+
 import '../../app_controller.dart';
 import '../../ui/shared.dart';
+import '../customers/customer_settings.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({required this.controller, super.key});
   final AppController controller;
 
   Future<void> _clearCache(BuildContext context) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Clear cache and saved M-Pesa data?'),
+        content: const Text(
+          'This removes all imported statements, sales, customer merges, saved results and cached files from HESABU. Your demo account, appearance settings and original files outside HESABU are preserved. This cannot be undone.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Clear imports and cache'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !context.mounted) return;
     try {
       await controller.clearCache();
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Cache cleared. Your database is unchanged.'),
+            content: Text(
+              'Imported statements, saved results and cache cleared. Demo account and settings preserved.',
+            ),
           ),
         );
       }
@@ -35,7 +59,7 @@ class SettingsPage extends StatelessWidget {
       builder: (context) => AlertDialog(
         title: const Text('Delete all data and clear cache?'),
         content: const Text(
-          'This permanently removes this device’s BizLens database, demo profile, preferences and cached files. Your original files outside BizLens are not touched. This cannot be undone.',
+          'This permanently removes this device’s HESABU database, demo profile, preferences and cached files. Your original files outside HESABU are not touched. This cannot be undone.',
         ),
         actions: [
           TextButton(
@@ -64,7 +88,7 @@ class SettingsPage extends StatelessWidget {
       messenger.showSnackBar(
         const SnackBar(
           content: Text(
-            'Deletion could not finish. Storage is locked. Restart BizLens and retry deletion.',
+            'Deletion could not finish. Storage is locked. Restart HESABU and retry deletion.',
           ),
         ),
       );
@@ -78,7 +102,7 @@ class SettingsPage extends StatelessWidget {
       children: [
         Text('Settings', style: Theme.of(context).textTheme.headlineMedium),
         const SizedBox(height: 24),
-        Card(
+        GlassPanel(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -121,7 +145,7 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Card(
+        GlassPanel(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -153,7 +177,7 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        const Card(
+        const GlassPanel(
           child: Padding(
             padding: EdgeInsets.all(24),
             child: Column(
@@ -171,7 +195,7 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        Card(
+        GlassPanel(
           child: Padding(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -183,7 +207,7 @@ class SettingsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Clear temporary files only, or reset the entire local workspace.',
+                  'Clear cache also erases imported statements, sales, customer merges and results. Delete all data resets the entire local workspace.',
                 ),
                 const SizedBox(height: 16),
                 Wrap(
@@ -218,6 +242,7 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
         ),
+        CustomerSettings(store: controller.store),
         const SizedBox(height: 24),
       ],
     ),

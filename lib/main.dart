@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+
 import 'app.dart';
 import 'app_controller.dart';
 import 'data/device_store.dart';
+import 'ui/theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -61,10 +63,12 @@ class _StartupState extends State<_Startup> {
 
   @override
   Widget build(BuildContext context) {
-    if (_controller != null) return BizLensApp(controller: _controller!);
+    if (_controller != null) return HesabuApp(controller: _controller!);
     return MaterialApp(
-      title: 'BizLens',
+      title: 'HESABU',
+      theme: buildTheme(Brightness.dark),
       home: Scaffold(
+        backgroundColor: const Color(0xff071329),
         body: SafeArea(
           child: Center(
             child: Builder(
@@ -80,7 +84,7 @@ class _StartupState extends State<_Startup> {
                         const Icon(Icons.lock_outline, size: 40),
                         const SizedBox(height: 16),
                         const Text(
-                          'BizLens could not unlock encrypted local storage. Check free space and device secure-storage access, then retry. No data was sent and no unencrypted database was used.',
+                          'HESABU could not unlock encrypted local storage. Check free space and device secure-storage access, then retry. No data was sent and no unencrypted database was used.',
                         ),
                         const SizedBox(height: 16),
                         FilledButton(
@@ -94,7 +98,7 @@ class _StartupState extends State<_Startup> {
                               builder: (context) => AlertDialog(
                                 title: const Text('Erase locked local data?'),
                                 content: const Text(
-                                  'This permanently deletes all BizLens local data, its encryption key and cached files. Your original files outside BizLens are not touched. This cannot be undone.',
+                                  'This permanently deletes all HESABU local data, its encryption key and cached files. Your original files outside HESABU are not touched. This cannot be undone.',
                                 ),
                                 actions: [
                                   TextButton(

@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "ke.co.bizlens" "\0"
-            VALUE "FileDescription", "bizlens" "\0"
+            VALUE "CompanyName", "HESABU" "\0"
+            VALUE "FileDescription", "HESABU" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "bizlens" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 ke.co.bizlens. All rights reserved." "\0"
-            VALUE "OriginalFilename", "bizlens.exe" "\0"
-            VALUE "ProductName", "bizlens" "\0"
+            VALUE "InternalName", "HESABU" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 HESABU. All rights reserved." "\0"
+            VALUE "OriginalFilename", "HESABU.exe" "\0"
+            VALUE "ProductName", "HESABU" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

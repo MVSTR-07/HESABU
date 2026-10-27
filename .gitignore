@@ -39,3 +39,25 @@ android/app/release/
 .idea/
 *.iml
 .vscode/settings.json
+
+# Statements and real business data must never enter Git, including PDF/CSV.
+*.pdf
+*.PDF
+*.csv
+*.CSV
+*.[pP][dD][fF]
+*.[cC][sS][vV]
+statements/
+imports/
+real_data/
+real-data/
+business_data/
+business-data/
+sample_output/
+
+# Test transcripts can contain this machine's local paths or diagnostics.
+# Keep existing tracked Stage 1 evidence; do not add new raw console captures.
+docs/evidence/hesabu-*.txt
+docs/evidence/mpesa-*.txt
+docs/evidence/stage-2-*.txt
+docs/evidence/stage-3-*.txt

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:path/path.dart' as p;
@@ -7,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'encrypted_database.dart';
 import 'local_store.dart';
+import '../core/mpesa/models.dart';
 
 abstract interface class KeyVault {
   Future<String?> read();
@@ -15,14 +17,16 @@ abstract interface class KeyVault {
 }
 
 class DeviceKeyVault implements KeyVault {
-  static const _keyName = 'bizlens.database.key.v1';
+  // Named parameter lets isolated native tests avoid the production key.
+  DeviceKeyVault({this.keyName = 'bizlens.database.key.v1'});
+  final String keyName;
   final _storage = const FlutterSecureStorage();
   @override
-  Future<String?> read() => _storage.read(key: _keyName);
+  Future<String?> read() => _storage.read(key: keyName);
   @override
-  Future<void> write(String key) => _storage.write(key: _keyName, value: key);
+  Future<void> write(String key) => _storage.write(key: keyName, value: key);
   @override
-  Future<void> delete() => _storage.delete(key: _keyName);
+  Future<void> delete() => _storage.delete(key: keyName);
 }
 
 /// Owns exactly one private directory outside the OneDrive project tree.
@@ -64,7 +68,7 @@ class DeviceStore implements LocalStore {
         p.join((await getApplicationSupportDirectory()).path, 'private'),
       );
     } else {
-      throw UnsupportedError('BizLens currently supports Windows and Android.');
+      throw UnsupportedError('HESABU currently supports Windows and Android.');
     }
     var ancestor = base;
     while (true) {
@@ -79,6 +83,8 @@ class DeviceStore implements LocalStore {
   }
 
   String get _databasePath => p.join(_root.path, 'bizlens.db');
+  @override
+  String get privateCachePath => p.join(_root.path, 'cache');
   EncryptedDatabase get _db {
     if (_deleting || _database == null) throw StateError('Storage is locked.');
     return _database!;
@@ -112,6 +118,19 @@ class DeviceStore implements LocalStore {
   int get sampleCount => _db.sampleCount;
   @override
   void seedSamples() => _db.seedSamples();
+  @override
+  List<StatementSummary> listMpesaStatements() => _db.listMpesaStatements();
+  @override
+  StoredStatement? loadMpesaStatement(int id) => _db.loadMpesaStatement(id);
+  @override
+  int saveMpesaStatement(
+    StoredStatement statement,
+    Uint8List source,
+    String hash,
+  ) => _db.saveMpesaStatement(statement, source, hash);
+  @override
+  void saveMpesaResults(int id, MpesaResults results) =>
+      _db.saveMpesaResults(id, results);
 
   // Refuse links and unexpected paths; deletion never follows a symlink.
   Future<void> _removeOwnedEntry(FileSystemEntity entry) async {
@@ -133,6 +152,8 @@ class DeviceStore implements LocalStore {
 
   @override
   Future<void> clearCache() async {
+    _db.writeSetting('customer_workspace', '{}');
+    _db.clearMpesaData();
     final cache = Directory(p.join(_root.path, 'cache'));
     await _removeOwnedEntry(cache);
   }

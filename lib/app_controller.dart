@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'data/local_store.dart';
 
-enum AppPage { intro, account, dashboard, settings }
+enum AppPage { intro, account, dashboard, settings, mpesa, customers }
 
 /// Local-only demo identity and entitlement. No server, payment or password
 /// handling exists in Stage 1. A future auth adapter must accept email only.
@@ -19,7 +19,8 @@ class AppController extends ChangeNotifier {
     themeMode = switch (store.readSetting('theme')) {
       'light' => ThemeMode.light,
       'dark' => ThemeMode.dark,
-      _ => ThemeMode.system,
+      'system' => ThemeMode.system,
+      _ => ThemeMode.dark,
     };
     page = signedIn ? AppPage.dashboard : AppPage.intro;
   }
@@ -34,6 +35,13 @@ class AppController extends ChangeNotifier {
 
   void navigate(AppPage next) {
     page = next;
+    notifyListeners();
+  }
+
+  /// Locks navigation during import, including the password prompt, so cleanup
+  /// cannot race an unfinished import and allow it to save data after a wipe.
+  void setImportBusy(bool value) {
+    busy = value;
     notifyListeners();
   }
 
@@ -100,7 +108,7 @@ class AppController extends ChangeNotifier {
       email = null;
       signedIn = false;
       paid = false;
-      themeMode = ThemeMode.system;
+      themeMode = ThemeMode.dark;
       page = AppPage.intro;
     } catch (_) {
       storageLocked = true;

@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
+
 import 'app_controller.dart';
 import 'features/auth/account_page.dart';
 import 'features/dashboard/dashboard_page.dart';
 import 'features/onboarding/intro_page.dart';
 import 'features/settings/settings_page.dart';
+import 'features/mpesa/mpesa_page.dart';
+import 'features/customers/customers_page.dart';
 import 'ui/theme.dart';
+import 'ui/glass.dart';
 
-class BizLensApp extends StatelessWidget {
-  const BizLensApp({required this.controller, super.key});
+class HesabuApp extends StatelessWidget {
+  const HesabuApp({required this.controller, super.key});
   final AppController controller;
   @override
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: controller,
     builder: (context, _) => MaterialApp(
-      title: 'BizLens',
+      title: 'HESABU',
       debugShowCheckedModeBanner: false,
       theme: buildTheme(Brightness.light),
       darkTheme: buildTheme(Brightness.dark),
@@ -34,7 +38,7 @@ class _Workspace extends StatelessWidget {
           child: Padding(
             padding: EdgeInsets.all(32),
             child: Text(
-              'Local storage is locked because deletion did not finish. Close and restart BizLens. No business data was sent.',
+              'Local storage is locked because deletion did not finish. Close and restart HESABU. No business data was sent.',
             ),
           ),
         ),
@@ -45,67 +49,111 @@ class _Workspace extends StatelessWidget {
       AppPage.account => AccountPage(controller: controller),
       AppPage.dashboard => DashboardPage(controller: controller),
       AppPage.settings => SettingsPage(controller: controller),
+      AppPage.mpesa => MpesaPage(controller: controller),
+      AppPage.customers => CustomersPage(controller: controller),
     };
-    return Scaffold(
-      appBar: AppBar(
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.insights, size: 28),
-            SizedBox(width: 10),
-            Flexible(child: Text('BizLens', overflow: TextOverflow.ellipsis)),
+    final floatingNavigation = controller.signedIn;
+    final visibleNavigation =
+        floatingNavigation &&
+        (controller.page == AppPage.dashboard ||
+            controller.page == AppPage.settings);
+    return HesabuBackdrop(
+      child: Scaffold(
+        appBar: AppBar(
+          toolbarHeight: 76,
+          title: const HesabuBrand(compact: true),
+          flexibleSpace: DecoratedBox(
+            decoration: BoxDecoration(
+              border: Border(
+                bottom: BorderSide(
+                  color: Theme.of(context).colorScheme.onSurface
+                      .withValues(alpha: .06),
+                ),
+              ),
+            ),
+          ),
+          actions: [
+            if (controller.signedIn)
+              IconButton(
+                tooltip: 'Dashboard',
+                icon: const Icon(Icons.dashboard_outlined),
+                onPressed: controller.busy
+                    ? null
+                    : () => controller.navigate(AppPage.dashboard),
+              ),
+            if (!controller.signedIn && controller.page != AppPage.intro)
+              IconButton(
+                tooltip: 'Introduction',
+                icon: const Icon(Icons.home_outlined),
+                onPressed: controller.busy
+                    ? null
+                    : () => controller.navigate(AppPage.intro),
+              ),
+            IconButton(
+              tooltip: 'Settings',
+              icon: const Icon(Icons.settings_outlined),
+              onPressed: controller.busy
+                  ? null
+                  : () => controller.navigate(AppPage.settings),
+            ),
+            const SizedBox(width: 12),
           ],
         ),
-        actions: [
-          if (controller.signedIn)
-            IconButton(
-              tooltip: 'Dashboard',
-              icon: const Icon(Icons.dashboard_outlined),
-              onPressed: controller.busy
-                  ? null
-                  : () => controller.navigate(AppPage.dashboard),
+        body: Stack(
+          children: [
+            Positioned.fill(
+              child: AbsorbPointer(absorbing: controller.busy, child: content),
             ),
-          if (!controller.signedIn && controller.page != AppPage.intro)
-            IconButton(
-              tooltip: 'Introduction',
-              icon: const Icon(Icons.home_outlined),
-              onPressed: controller.busy
-                  ? null
-                  : () => controller.navigate(AppPage.intro),
-            ),
-          IconButton(
-            tooltip: 'Settings',
-            icon: const Icon(Icons.settings_outlined),
-            onPressed: controller.busy
-                ? null
-                : () => controller.navigate(AppPage.settings),
-          ),
-          const SizedBox(width: 12),
-        ],
-      ),
-      body: AbsorbPointer(absorbing: controller.busy, child: content),
-      bottomNavigationBar: controller.signedIn
-          ? NavigationBar(
-              selectedIndex: controller.page == AppPage.settings ? 1 : 0,
-              onDestinationSelected: controller.busy
-                  ? null
-                  : (i) => controller.navigate(
-                      i == 0 ? AppPage.dashboard : AppPage.settings,
+            if (visibleNavigation)
+              Positioned(
+                left: 0,
+                right: 0,
+                bottom: 8,
+                child: SafeArea(
+                  top: false,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Align(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 440),
+                        child: GlassPanel(
+                          radius: 32,
+                          fillOpacity: 0.34,
+                          refractionStrength: 2.7,
+                          grouped: false,
+                          child: NavigationBar(
+                            selectedIndex: controller.page == AppPage.settings
+                                ? 1
+                                : 0,
+                            onDestinationSelected: controller.busy
+                                ? null
+                                : (i) => controller.navigate(
+                                    i == 0
+                                        ? AppPage.dashboard
+                                        : AppPage.settings,
+                                  ),
+                            destinations: const [
+                              NavigationDestination(
+                                icon: Icon(Icons.grid_view_outlined),
+                                selectedIcon: Icon(Icons.grid_view),
+                                label: 'Dashboard',
+                              ),
+                              NavigationDestination(
+                                icon: Icon(Icons.settings_outlined),
+                                selectedIcon: Icon(Icons.settings),
+                                label: 'Settings',
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
                     ),
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.grid_view_outlined),
-                  selectedIcon: Icon(Icons.grid_view),
-                  label: 'Dashboard',
+                  ),
                 ),
-                NavigationDestination(
-                  icon: Icon(Icons.settings_outlined),
-                  selectedIcon: Icon(Icons.settings),
-                  label: 'Settings',
-                ),
-              ],
-            )
-          : null,
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

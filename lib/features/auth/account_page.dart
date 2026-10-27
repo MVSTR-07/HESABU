@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import '../../app_controller.dart';
+import '../../ui/shared.dart';
 
 // TODO(real-auth): Keep the visible DEMO warning until genuine verified sign-in
 // is connected. No password input, password storage, or password logging here.
@@ -32,12 +34,17 @@ class _AccountPageState extends State<AccountPage> {
       padding: const EdgeInsets.all(24),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 480),
-        child: Card(
+        child: GlassPanel(
           child: Padding(
             padding: const EdgeInsets.all(28),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                const Align(
+                  alignment: Alignment.centerLeft,
+                  child: HesabuBrand(),
+                ),
+                const SizedBox(height: 28),
                 Text(
                   _create ? 'Create your workspace' : 'Welcome back',
                   style: Theme.of(context).textTheme.headlineMedium,

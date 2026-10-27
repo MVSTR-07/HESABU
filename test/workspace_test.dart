@@ -5,6 +5,7 @@ import 'package:bizlens/core/sample_data.dart';
 import 'package:bizlens/ui/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'support/memory_store.dart';
 
 void main() {
@@ -46,14 +47,22 @@ void main() {
     tester,
   ) async {
     final controller = AppController(MemoryStore());
-    await tester.pumpWidget(BizLensApp(controller: controller));
+    await tester.pumpWidget(HesabuApp(controller: controller));
+    await tester.ensureVisible(find.text('Get started'));
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'shop@example.test');
+    await tester.ensureVisible(find.text('Create demo profile'));
     await tester.tap(find.text('Create demo profile'));
     await tester.pumpAndSettle();
     expect(controller.page, AppPage.dashboard);
-    await tester.tap(find.text('Load sample data'));
+    await tester.tap(find.text('Load sample data'), warnIfMissed: false);
+    // The control sits below the summary on the default 600px test viewport.
+    if (controller.store.sampleCount == 0) {
+      await tester.drag(find.byType(ListView).first, const Offset(0, -320));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Load sample data'));
+    }
     await tester.pumpAndSettle();
     expect(controller.store.sampleCount, 12);
     await tester.scrollUntilVisible(find.text('Customer performance'), 200);
@@ -82,7 +91,7 @@ void main() {
     expect(find.text('Get started'), findsOneWidget);
   });
 
-  testWidgets('two-column cards tolerate a narrow phone and large text', (
+  testWidgets('dashboard cards adapt to a narrow phone and large text', (
     tester,
   ) async {
     tester.view.physicalSize = const Size(360, 800);
@@ -94,15 +103,16 @@ void main() {
     await tester.pumpWidget(
       MediaQuery(
         data: const MediaQueryData(textScaler: TextScaler.linear(1.4)),
-        child: BizLensApp(controller: controller),
+        child: HesabuApp(controller: controller),
       ),
     );
     await tester.pumpAndSettle();
     await tester.scrollUntilVisible(find.text('Export reports'), 250);
     await tester.pumpAndSettle();
     expect(
-      tester.getTopLeft(find.text('Customer performance')).dx,
-      greaterThan(tester.getTopLeft(find.text('M-Pesa statements')).dx),
+      tester.getTopLeft(find.text('Customer performance')).dy,
+      greaterThan(tester.getTopLeft(find.text('M-Pesa statements')).dy),
     );
+    expect(find.text('Expense analyser'), findsOneWidget);
   });
 }

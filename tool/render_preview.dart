@@ -37,7 +37,7 @@ void main() {
     await tester.pumpWidget(
       RepaintBoundary(
         key: key,
-        child: BizLensApp(controller: controller),
+        child: HesabuApp(controller: controller),
       ),
     );
     await tester.pumpAndSettle();

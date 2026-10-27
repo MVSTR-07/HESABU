@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../app_controller.dart';
+
 class ToolDefinition {
   const ToolDefinition(
     this.id,
@@ -8,6 +10,7 @@ class ToolDefinition {
     this.icon, {
     required this.stage,
     this.paid = false,
+    this.page,
   });
   final String id;
   final String title;
@@ -15,6 +18,7 @@ class ToolDefinition {
   final IconData icon;
   final int stage;
   final bool paid;
+  final AppPage? page;
 }
 
 // Add a card here once. The dashboard never hardcodes individual tools.
@@ -26,6 +30,7 @@ const tools = [
     'Understand where your money goes.',
     Icons.account_balance_wallet_outlined,
     stage: 2,
+    page: AppPage.mpesa,
   ),
   ToolDefinition(
     'customers',
@@ -34,6 +39,7 @@ const tools = [
     Icons.people_outline,
     stage: 3,
     paid: true,
+    page: AppPage.customers,
   ),
   ToolDefinition(
     'stock',
