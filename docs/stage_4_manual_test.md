@@ -35,4 +35,5 @@ Run the Windows app:
 8. Check dark and light appearance. No real business records or statements are
    needed for this checklist.
 
-Please stop here and report any issue or confirm Stage 4 sign-off before Stage 5.
+The project owner approved Stage 4 on 18 November 2026. Keep Stage 5 on hold
+until the project owner requests it.

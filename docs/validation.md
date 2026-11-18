@@ -1,9 +1,8 @@
 # Validation summary
 
 HESABU has been built and checked on Windows with Flutter. The project owner
-has manually signed off Stages 1, 2 and 3. Stage 4's analysis, test suite and
-Windows build passed on 18 November 2026; its manual checklist is still awaiting
-the owner's review.
+has approved Stages 1 through 4. Stage 4's analysis, test suite and Windows
+build passed on 18 November 2026.
 
 Automated coverage includes pure-Dart analysis rules, CSV and fabricated
 password-protected PDF parsing, encrypted database persistence, local data

@@ -8,9 +8,8 @@ first release is being built for Windows, with Android support planned from the
 same Dart codebase.
 
 This repository is a work in progress. The M-Pesa and customer tools have been
-manually checked by the project owner. Stock, sales and expense tools are built
-and are waiting for that same hands-on check. HESABU is not yet a finished or
-published product.
+manually checked by the project owner. The stock, sales and expense tools have
+also been approved. HESABU is not yet a finished or published product.
 
 ## What you can explore
 
@@ -66,10 +65,9 @@ import are left where they are.
 
 ## Where the work stands
 
-Stages 1, 2 and 3 have been signed off by the project owner. Stage 4 (stock,
-sales and expenses) is implemented and awaits manual testing. Stage 5 has not
-started. Android device testing and final M-Pesa PDF compatibility checks are
-still needed before a public product release.
+Stages 1 through 4 have been approved by the project owner. Stage 5 has not
+started. Android device testing and broader M-Pesa PDF compatibility checks are
+still needed before a finished product release.
 
 The repository is named **HESABU** and is owned by **MVSTR-07**. The project is
 being prepared for public review; do not treat a GitHub copy as a hosted service

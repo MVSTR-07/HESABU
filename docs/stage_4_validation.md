@@ -2,8 +2,8 @@
 
 The three analysers are implemented. Automated validation passed:
 the pure-Dart analysis tests, encrypted-storage persistence and cleanup tests,
-static analysis, and a Windows profile build. Stage 4 is still waiting for the
-project owner's manual test and sign-off. Stage 5 has not started.
+static analysis, and a Windows profile build. The project owner approved Stage 4
+on 18 November 2026. Stage 5 has not started.
 
 This release candidate also changes the app's package identity and Windows
 storage location to HESABU. On first launch it migrates the existing encrypted
@@ -34,4 +34,5 @@ Current checks:
   and key-store locations remain.
 - Android device validation remains pending.
 
-After automated validation, follow [the manual Stage 4 checklist](stage_4_manual_test.md).
+The [Stage 4 checklist](stage_4_manual_test.md) is retained for repeat manual
+checks. This approval does not authorize Stage 5.
