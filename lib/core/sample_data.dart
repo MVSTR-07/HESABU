@@ -1,11 +1,14 @@
-import 'dart:convert';
 import 'dart:typed_data';
+import 'dart:convert';
 
 import 'mpesa/models.dart';
 import 'mpesa/sample_pdf_bytes.dart';
 import 'sales/sales_analysis.dart';
 import 'expenses/expense_analysis.dart';
 import 'stock/stock_analysis.dart';
+import 'finance/obligation.dart';
+
+import 'package:excel_plus/excel_plus.dart';
 
 /// Fabricated fixtures only. Integer minor units avoid rounding money in SQLite.
 class SamplePayment {
@@ -188,6 +191,63 @@ List<StockItem> generateSampleStock() => [
   _stock('006', 'Tea leaves 500g', 18, 12, 16, 0, 22000, 8),
   _stock('007', 'Bottled water 1L', 24, 0, 24, 0, 6000, 6),
   _stock('008', 'Bread', 20, 8, 26, 1, 5500, 5),
+];
+
+/// Fabricated CSV fixture for Stage 5 import previews. This is safe to commit.
+Uint8List generateSampleSalesImportCsv() => Uint8List.fromList(
+  utf8.encode('''Date,Product,Quantity,Amount,Customer
+01/10/2026,Maize flour 2kg,2,360.00,Akinyi Otieno
+02/10/2026,"Cooking oil, 1L",1,260.00,Peter Mwangi
+bad-date,Rice 2kg,3,1020.00,Zawadi Hassan
+'''),
+);
+
+Uint8List generateSampleSalesImportXlsx() {
+  final workbook = Excel.createExcel();
+  workbook.rename('Sheet1', 'Sales');
+  final sheet = workbook['Sales'];
+  const rows = [
+    ['Date', 'Product', 'Quantity', 'Amount', 'Customer'],
+    ['01/10/2026', 'Maize flour 2kg', '2', '360.00', 'Akinyi Otieno'],
+    ['02/10/2026', 'Cooking oil 1L', '1', '260.00', 'Peter Mwangi'],
+  ];
+  for (var row = 0; row < rows.length; row++) {
+    for (var column = 0; column < rows[row].length; column++) {
+      sheet.updateCell(
+        CellIndex.indexByColumnRow(columnIndex: column, rowIndex: row),
+        TextCellValue(rows[row][column]),
+      );
+    }
+  }
+  final bytes = workbook.encode();
+  if (bytes == null) {
+    throw StateError('Fabricated workbook could not be created.');
+  }
+  return Uint8List.fromList(bytes);
+}
+
+List<ObligationRecord> generateSampleObligations() => [
+  ObligationRecord(
+    id: 'DEMO-BALANCE-001',
+    kind: ObligationKind.debtor,
+    party: 'Akinyi Otieno',
+    description: 'Shop supplies',
+    originalMinor: 125000,
+    settledMinor: 25000,
+    createdAt: DateTime.utc(2026, 10, 1),
+    dueAt: DateTime.utc(2026, 10, 20),
+    reference: 'DEMO-INV-001',
+  ),
+  ObligationRecord(
+    id: 'DEMO-BALANCE-002',
+    kind: ObligationKind.creditor,
+    party: 'Fabricated supplier',
+    description: 'Packaging stock',
+    originalMinor: 80000,
+    settledMinor: 0,
+    createdAt: DateTime.utc(2026, 10, 5),
+    dueAt: DateTime.utc(2026, 11, 30),
+  ),
 ];
 
 StockItem _stock(

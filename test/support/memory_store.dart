@@ -6,6 +6,7 @@ import 'package:hesabu/data/local_store.dart';
 import 'package:hesabu/core/sales/sales_analysis.dart';
 import 'package:hesabu/core/expenses/expense_analysis.dart';
 import 'package:hesabu/core/stock/stock_analysis.dart';
+import 'package:hesabu/core/finance/obligation.dart';
 
 class MemoryKeyVault implements KeyVault {
   String? value;
@@ -29,6 +30,7 @@ class MemoryStore implements LocalStore {
   final salesRows = <String, SaleRecord>{};
   final expenseRows = <String, ExpenseRecord>{};
   final stockRows = <String, StockItem>{};
+  final obligationRows = <String, ObligationRecord>{};
   @override
   String? get privateCachePath => null;
   final values = <String, String>{};
@@ -55,6 +57,7 @@ class MemoryStore implements LocalStore {
     salesRows.clear();
     expenseRows.clear();
     stockRows.clear();
+    obligationRows.clear();
   }
 
   @override
@@ -66,6 +69,7 @@ class MemoryStore implements LocalStore {
     salesRows.clear();
     expenseRows.clear();
     stockRows.clear();
+    obligationRows.clear();
   }
 
   @override
@@ -115,11 +119,25 @@ class MemoryStore implements LocalStore {
   @override
   void saveSale(SaleRecord sale) => salesRows[sale.id] = sale;
   @override
+  void saveSalesBatch(List<SaleRecord> sales) {
+    for (final sale in sales) {
+      salesRows[sale.id] = sale;
+    }
+  }
+
+  @override
   void deleteSale(String id) => salesRows.remove(id);
   @override
   List<ExpenseRecord> listExpenses() => expenseRows.values.toList();
   @override
   void saveExpense(ExpenseRecord expense) => expenseRows[expense.id] = expense;
+  @override
+  void saveExpensesBatch(List<ExpenseRecord> expenses) {
+    for (final expense in expenses) {
+      expenseRows[expense.id] = expense;
+    }
+  }
+
   @override
   void deleteExpense(String id) => expenseRows.remove(id);
   @override
@@ -128,4 +146,17 @@ class MemoryStore implements LocalStore {
   void saveStockItem(StockItem item) => stockRows[item.id] = item;
   @override
   void deleteStockItem(String id) => stockRows.remove(id);
+  @override
+  List<ObligationRecord> listObligations() => obligationRows.values.toList();
+  @override
+  void saveObligation(ObligationRecord row) => obligationRows[row.id] = row;
+  @override
+  void saveObligationsBatch(List<ObligationRecord> rows) {
+    for (final row in rows) {
+      obligationRows[row.id] = row;
+    }
+  }
+
+  @override
+  void deleteObligation(String id) => obligationRows.remove(id);
 }

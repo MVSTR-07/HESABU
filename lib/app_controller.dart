@@ -12,6 +12,10 @@ enum AppPage {
   stock,
   sales,
   expenses,
+  profit,
+  debts,
+  imports,
+  reports,
 }
 
 /// Local-only demo identity and entitlement. No server, payment or password

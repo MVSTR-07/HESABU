@@ -18,7 +18,10 @@ also been approved. HESABU is not yet a finished or published product.
 - **Customer performance:** review payment history, customer segments,
   concentration and personalised drop-off signals.
 - **Stock, sales and expenses:** enter records locally and explore summaries.
-  These tools are the current testing focus.
+- **Profit and loss, balances, imports and reports:** create a simple working
+  surplus view, track customer/supplier balances, review CSV/Excel rows before
+  import, and save local PDF/Excel summaries. These Stage 5 tools are ready for
+  owner testing; they are not a replacement for formal accounts.
 - **Light and dark appearance:** the shared interface uses a dark-blue glass
   style, with a light option.
 
@@ -65,9 +68,10 @@ import are left where they are.
 
 ## Where the work stands
 
-Stages 1 through 4 have been approved by the project owner. Stage 5 has not
-started. Android device testing and broader M-Pesa PDF compatibility checks are
-still needed before a finished product release.
+Stages 1 through 4 have been approved by the project owner. Stage 5 is
+implemented and awaiting the project owner's manual testing and sign-off.
+Android device testing and broader M-Pesa PDF compatibility checks are still
+needed before a finished product release.
 
 The repository is named **HESABU** and is owned by **MVSTR-07**. The project is
 being prepared for public review; do not treat a GitHub copy as a hosted service

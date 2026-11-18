@@ -10,6 +10,10 @@ import 'features/customers/customers_page.dart';
 import 'features/stock/stock_page.dart';
 import 'features/sales/sales_page.dart';
 import 'features/expenses/expenses_page.dart';
+import 'features/finance/profit_page.dart';
+import 'features/debts/debts_page.dart';
+import 'features/imports/imports_page.dart';
+import 'features/reports/reports_page.dart';
 import 'ui/theme.dart';
 import 'ui/glass.dart';
 
@@ -57,6 +61,10 @@ class _Workspace extends StatelessWidget {
       AppPage.stock => StockPage(controller: controller),
       AppPage.sales => SalesPage(controller: controller),
       AppPage.expenses => ExpensesPage(controller: controller),
+      AppPage.profit => ProfitPage(controller: controller),
+      AppPage.debts => DebtsPage(controller: controller),
+      AppPage.imports => ImportsPage(controller: controller),
+      AppPage.reports => ReportsPage(controller: controller),
     };
     final floatingNavigation = controller.signedIn;
     final visibleNavigation =
@@ -67,6 +75,15 @@ class _Workspace extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           toolbarHeight: 76,
+          leading: _isToolPage(controller.page)
+              ? IconButton(
+                  tooltip: 'Back to dashboard',
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: controller.busy
+                      ? null
+                      : () => controller.navigate(AppPage.dashboard),
+                )
+              : null,
           title: const HesabuBrand(compact: true),
           flexibleSpace: DecoratedBox(
             decoration: BoxDecoration(
@@ -163,3 +180,19 @@ class _Workspace extends StatelessWidget {
     );
   }
 }
+
+bool _isToolPage(AppPage page) => switch (page) {
+  AppPage.mpesa ||
+  AppPage.customers ||
+  AppPage.stock ||
+  AppPage.sales ||
+  AppPage.expenses ||
+  AppPage.profit ||
+  AppPage.debts ||
+  AppPage.imports ||
+  AppPage.reports => true,
+  AppPage.intro ||
+  AppPage.account ||
+  AppPage.dashboard ||
+  AppPage.settings => false,
+};

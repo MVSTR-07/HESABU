@@ -6,6 +6,36 @@ import 'package:flutter_test/flutter_test.dart';
 import '../support/memory_store.dart';
 
 void main() {
+  testWidgets('Stage 5 screens render on a narrow phone viewport', (
+    tester,
+  ) async {
+    tester.view.physicalSize = const Size(360, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    final store = MemoryStore();
+    final controller = AppController(store)
+      ..enterDemo('test@example.test', create: true)
+      ..setDemoPaid(true);
+
+    for (final page in [
+      AppPage.profit,
+      AppPage.debts,
+      AppPage.imports,
+      AppPage.reports,
+    ]) {
+      controller.navigate(page);
+      await tester.pumpWidget(HesabuApp(controller: controller));
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull, reason: '$page initial layout');
+      expect(find.byTooltip('Back to dashboard'), findsOneWidget);
+      await tester.tap(find.byTooltip('Back to dashboard'));
+      await tester.pumpAndSettle();
+      expect(controller.page, AppPage.dashboard);
+    }
+  });
+
   testWidgets('Stage 4 screens render sample analysis on a narrow viewport', (
     tester,
   ) async {

@@ -8,6 +8,7 @@ import '../core/mpesa/models.dart';
 import '../core/sales/sales_analysis.dart';
 import '../core/expenses/expense_analysis.dart';
 import '../core/stock/stock_analysis.dart';
+import '../core/finance/obligation.dart';
 
 /// All database files, journals and settings use SQLCipher. Keys are generated
 /// outside this class and never stored in a file or in source control.
@@ -34,7 +35,7 @@ class EncryptedDatabase {
       db.execute('PRAGMA journal_mode = DELETE');
       final version =
           db.select('PRAGMA user_version').first.values.first as int;
-      if (version > 3) throw StateError('This database needs a newer HESABU.');
+      if (version > 4) throw StateError('This database needs a newer HESABU.');
       if (version == 0) {
         db.execute('BEGIN IMMEDIATE');
         try {
@@ -119,6 +120,29 @@ class EncryptedDatabase {
           rethrow;
         }
       }
+      if (version < 4) {
+        db.execute('BEGIN IMMEDIATE');
+        try {
+          db.execute('''CREATE TABLE obligations (
+            id TEXT PRIMARY KEY,
+            kind TEXT NOT NULL CHECK(kind IN ('debtor','creditor')),
+            party TEXT NOT NULL,
+            description TEXT NOT NULL,
+            original_minor INTEGER NOT NULL CHECK(original_minor > 0),
+            settled_minor INTEGER NOT NULL CHECK(settled_minor >= 0 AND settled_minor <= original_minor),
+            created_at TEXT NOT NULL,
+            due_at TEXT,
+            reference TEXT NOT NULL DEFAULT ''
+          )''');
+          db.execute('CREATE INDEX obligations_due ON obligations(due_at)');
+          db.execute('PRAGMA user_version = 4');
+          db.execute('COMMIT');
+        } catch (_) {
+          db.execute('ROLLBACK');
+          rethrow;
+        }
+      }
+      // Stage 5 migration is additive; it retains all prior encrypted rows.
       return EncryptedDatabase._(db);
     } catch (_) {
       db.close();
@@ -265,6 +289,19 @@ class EncryptedDatabase {
     ],
   );
 
+  void saveSalesBatch(List<SaleRecord> sales) {
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      for (final sale in sales) {
+        saveSale(sale);
+      }
+      _db.execute('COMMIT');
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
   void deleteSale(String id) =>
       _db.execute('DELETE FROM sales_entries WHERE id=?', [id]);
 
@@ -296,6 +333,19 @@ class EncryptedDatabase {
       expense.payee.trim(),
     ],
   );
+
+  void saveExpensesBatch(List<ExpenseRecord> expenses) {
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      for (final expense in expenses) {
+        saveExpense(expense);
+      }
+      _db.execute('COMMIT');
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
 
   void deleteExpense(String id) =>
       _db.execute('DELETE FROM expense_entries WHERE id=?', [id]);
@@ -344,6 +394,60 @@ class EncryptedDatabase {
   void deleteStockItem(String id) =>
       _db.execute('DELETE FROM stock_items WHERE id=?', [id]);
 
+  List<ObligationRecord> listObligations() => _db
+      .select('''SELECT id,kind,party,description,original_minor,settled_minor,
+        created_at,due_at,reference FROM obligations
+        ORDER BY CASE WHEN due_at IS NULL THEN 1 ELSE 0 END,due_at,id''')
+      .map(
+        (row) => ObligationRecord(
+          id: row['id'] as String,
+          kind: ObligationKind.values.byName(row['kind'] as String),
+          party: row['party'] as String,
+          description: row['description'] as String,
+          originalMinor: row['original_minor'] as int,
+          settledMinor: row['settled_minor'] as int,
+          createdAt: DateTime.parse(row['created_at'] as String),
+          dueAt: row['due_at'] == null
+              ? null
+              : DateTime.parse(row['due_at'] as String),
+          reference: row['reference'] as String,
+        ),
+      )
+      .toList();
+
+  void saveObligationsBatch(List<ObligationRecord> rows) {
+    _db.execute('BEGIN IMMEDIATE');
+    try {
+      for (final row in rows) {
+        saveObligation(row);
+      }
+      _db.execute('COMMIT');
+    } catch (_) {
+      _db.execute('ROLLBACK');
+      rethrow;
+    }
+  }
+
+  void saveObligation(ObligationRecord row) => _db.execute(
+    '''INSERT OR REPLACE INTO obligations
+      (id,kind,party,description,original_minor,settled_minor,created_at,due_at,reference)
+      VALUES (?,?,?,?,?,?,?,?,?)''',
+    [
+      row.id,
+      row.kind.name,
+      row.party.trim(),
+      row.description.trim(),
+      row.originalMinor,
+      row.settledMinor,
+      row.createdAt.toUtc().toIso8601String(),
+      row.dueAt?.toUtc().toIso8601String(),
+      row.reference.trim(),
+    ],
+  );
+
+  void deleteObligation(String id) =>
+      _db.execute('DELETE FROM obligations WHERE id=?', [id]);
+
   void clearWorkspaceData() {
     _db.execute('BEGIN IMMEDIATE');
     try {
@@ -351,6 +455,7 @@ class EncryptedDatabase {
       _db.execute('DELETE FROM sales_entries');
       _db.execute('DELETE FROM expense_entries');
       _db.execute('DELETE FROM stock_items');
+      _db.execute('DELETE FROM obligations');
       _db.execute('COMMIT');
     } catch (_) {
       _db.execute('ROLLBACK');

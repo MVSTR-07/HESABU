@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:hesabu/core/expenses/expense_analysis.dart';
 import 'package:hesabu/core/sales/sales_analysis.dart';
 import 'package:hesabu/core/stock/stock_analysis.dart';
+import 'package:hesabu/core/finance/obligation.dart';
 import 'package:hesabu/data/device_store.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -94,6 +95,18 @@ void main() {
           updatedAt: date,
         ),
       );
+      store!.saveObligation(
+        ObligationRecord(
+          id: 'balance-test',
+          kind: ObligationKind.debtor,
+          party: 'Fabricated customer',
+          description: 'Fabricated goods',
+          originalMinor: 12500,
+          settledMinor: 2500,
+          createdAt: date,
+          dueAt: DateTime.utc(2026, 11, 1),
+        ),
+      );
       store!.writeSetting('theme', 'dark');
 
       store!.close();
@@ -101,6 +114,7 @@ void main() {
       expect(store!.listSales().single.product, 'Fabricated flour');
       expect(store!.listExpenses().single.description, 'Local test record');
       expect(store!.listStockItems().single.quantityOnHand, 7);
+      expect(store!.listObligations().single.outstandingMinor, 10000);
       expect(store!.readSetting('theme'), 'dark');
 
       final databaseBytes = await File(p.join(root.path, 'hesabu.db'))
@@ -114,6 +128,7 @@ void main() {
       expect(store!.listSales(), isEmpty);
       expect(store!.listExpenses(), isEmpty);
       expect(store!.listStockItems(), isEmpty);
+      expect(store!.listObligations(), isEmpty);
       expect(store!.readSetting('theme'), 'dark');
     },
   );

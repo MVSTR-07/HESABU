@@ -12,6 +12,7 @@ import '../core/mpesa/models.dart';
 import '../core/sales/sales_analysis.dart';
 import '../core/expenses/expense_analysis.dart';
 import '../core/stock/stock_analysis.dart';
+import '../core/finance/obligation.dart';
 
 abstract interface class KeyVault {
   Future<String?> read();
@@ -252,11 +253,16 @@ class DeviceStore implements LocalStore {
   @override
   void saveSale(SaleRecord sale) => _db.saveSale(sale);
   @override
+  void saveSalesBatch(List<SaleRecord> sales) => _db.saveSalesBatch(sales);
+  @override
   void deleteSale(String id) => _db.deleteSale(id);
   @override
   List<ExpenseRecord> listExpenses() => _db.listExpenses();
   @override
   void saveExpense(ExpenseRecord expense) => _db.saveExpense(expense);
+  @override
+  void saveExpensesBatch(List<ExpenseRecord> expenses) =>
+      _db.saveExpensesBatch(expenses);
   @override
   void deleteExpense(String id) => _db.deleteExpense(id);
   @override
@@ -265,6 +271,15 @@ class DeviceStore implements LocalStore {
   void saveStockItem(StockItem item) => _db.saveStockItem(item);
   @override
   void deleteStockItem(String id) => _db.deleteStockItem(id);
+  @override
+  List<ObligationRecord> listObligations() => _db.listObligations();
+  @override
+  void saveObligation(ObligationRecord row) => _db.saveObligation(row);
+  @override
+  void saveObligationsBatch(List<ObligationRecord> rows) =>
+      _db.saveObligationsBatch(rows);
+  @override
+  void deleteObligation(String id) => _db.deleteObligation(id);
 
   // Refuse links and unexpected paths; deletion never follows a symlink.
   Future<void> _removeOwnedEntry(FileSystemEntity entry) async {

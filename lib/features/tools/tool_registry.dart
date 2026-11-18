@@ -73,6 +73,7 @@ const tools = [
     Icons.pie_chart_outline,
     stage: 5,
     paid: true,
+    page: AppPage.profit,
   ),
   ToolDefinition(
     'debts',
@@ -81,6 +82,7 @@ const tools = [
     Icons.swap_horiz,
     stage: 5,
     paid: true,
+    page: AppPage.debts,
   ),
   ToolDefinition(
     'imports',
@@ -88,6 +90,7 @@ const tools = [
     'Prepare Excel and CSV records.',
     Icons.upload_file_outlined,
     stage: 5,
+    page: AppPage.imports,
   ),
   ToolDefinition(
     'reports',
@@ -96,5 +99,6 @@ const tools = [
     Icons.file_download_outlined,
     stage: 5,
     paid: true,
+    page: AppPage.reports,
   ),
 ];

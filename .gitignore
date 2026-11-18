@@ -48,7 +48,11 @@ android/app/release/
 *.[pP][dD][fF]
 *.[cC][sS][vV]
 statements/
-imports/
+/imports/
+*.xlsx
+*.XLSX
+*.xls
+*.XLS
 real_data/
 real-data/
 business_data/
