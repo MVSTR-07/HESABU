@@ -68,8 +68,8 @@ import are left where they are.
 
 ## Where the work stands
 
-Stages 1 through 4 have been approved by the project owner. Stage 5 is
-implemented and awaiting the project owner's manual testing and sign-off.
+Stages 1 through 4 are complete. Stage 5 is
+implemented and awaiting testing.
 Android device testing and broader M-Pesa PDF compatibility checks are still
 needed before a finished product release.
 
