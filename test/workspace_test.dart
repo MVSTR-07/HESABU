@@ -1,8 +1,8 @@
-import 'package:bizlens/app.dart';
-import 'package:bizlens/app_controller.dart';
-import 'package:bizlens/ai/ai_service.dart';
-import 'package:bizlens/core/sample_data.dart';
-import 'package:bizlens/ui/formatters.dart';
+import 'package:hesabu/app.dart';
+import 'package:hesabu/app_controller.dart';
+import 'package:hesabu/ai/ai_service.dart';
+import 'package:hesabu/core/sample_data.dart';
+import 'package:hesabu/ui/formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

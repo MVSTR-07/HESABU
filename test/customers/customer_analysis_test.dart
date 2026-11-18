@@ -1,4 +1,4 @@
-import 'package:bizlens/core/customers/customer_analysis.dart';
+import 'package:hesabu/core/customers/customer_analysis.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 CustomerPayment p(

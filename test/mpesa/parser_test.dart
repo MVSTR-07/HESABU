@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/core/mpesa/statement_parser.dart';
-import 'package:bizlens/core/sample_data.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/core/mpesa/statement_parser.dart';
+import 'package:hesabu/core/sample_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

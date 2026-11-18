@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/core/sample_data.dart';
-import 'package:bizlens/data/device_store.dart';
-import 'package:bizlens/data/mpesa_import_service.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/core/sample_data.dart';
+import 'package:hesabu/data/device_store.dart';
+import 'package:hesabu/data/mpesa_import_service.dart';
 import 'package:sqlite3/sqlite3.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
@@ -19,7 +19,7 @@ void main() {
   DeviceStore? store;
   setUp(() async {
     parent = await Directory.systemTemp.createTemp(
-      'bizlens-mpesa-storage-test-',
+      'hesabu-mpesa-storage-test-',
     );
     root = Directory(p.join(parent.path, 'private'));
     vault = MemoryKeyVault();
@@ -43,7 +43,7 @@ void main() {
     expect(store!.listMpesaStatements().length, 1);
     store!.close();
     final raw = latin1.decode(
-      await File(p.join(root.path, 'bizlens.db')).readAsBytes(),
+      await File(p.join(root.path, 'hesabu.db')).readAsBytes(),
     );
     expect(raw.contains('Wanjiku'), isFalse);
     expect(raw.contains('Receipt No.'), isFalse);
@@ -72,7 +72,7 @@ void main() {
     expect(store!.readSetting('account_email'), 'fabricated@example.test');
     expect(store!.sampleCount, 12);
     store!.close();
-    final db = sqlite3.open(p.join(root.path, 'bizlens.db'));
+    final db = sqlite3.open(p.join(root.path, 'hesabu.db'));
     db.execute('PRAGMA key = "x\'${vault.value}\'"');
     expect(
       db.select('SELECT count(*) AS n FROM mpesa_statements').first['n'],

@@ -1,8 +1,8 @@
 # Stage 2 manual sign-off
 
-Stage 1 is signed off. Stage 2 is ready for Windows manual testing; Canva styling
-and Stage 3 remain postponed. Use fabricated data first. Deletion tests erase
-saved app data, so do not import a real statement until finished.
+The project owner has signed off Stages 1, 2 and 3. Use fabricated data for
+repeat checks. Deletion tests erase saved app data, so do not import a real
+statement during a demo.
 
 ## Launch and sample imports
 
@@ -83,8 +83,8 @@ dart run tool/export_mpesa_sample.dart
     files must disappear. A new empty encrypted database is created. Reopen and
     confirm there are no saved reports; original files remain untouched.
 
-Report any failing step before signing off. Android is not signed off: its SDK
-and device checks have not run. Do not start Stage 3 until the user confirms.
+Report any failing step before relying on the analyser for important records.
+Android is not signed off: its SDK and device checks have not run.
 
 ## Automated checks
 

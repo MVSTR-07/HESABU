@@ -48,6 +48,7 @@ const tools = [
     Icons.inventory_2_outlined,
     stage: 4,
     paid: true,
+    page: AppPage.stock,
   ),
   ToolDefinition(
     'sales',
@@ -55,6 +56,7 @@ const tools = [
     'Find patterns in your daily sales.',
     Icons.show_chart,
     stage: 4,
+    page: AppPage.sales,
   ),
   ToolDefinition(
     'expenses',
@@ -62,6 +64,7 @@ const tools = [
     'Keep business costs in view.',
     Icons.receipt_long_outlined,
     stage: 4,
+    page: AppPage.expenses,
   ),
   ToolDefinition(
     'profit',

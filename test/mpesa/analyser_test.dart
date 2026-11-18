@@ -1,7 +1,7 @@
-import 'package:bizlens/core/mpesa/analyser.dart';
-import 'package:bizlens/core/mpesa/anomaly_rules.dart';
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/core/sample_data.dart';
+import 'package:hesabu/core/mpesa/analyser.dart';
+import 'package:hesabu/core/mpesa/anomaly_rules.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/core/sample_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'classifier_test.dart' show fixtureTx;

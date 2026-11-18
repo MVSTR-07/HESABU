@@ -6,7 +6,7 @@ export 'pdf_layout_geometry.dart';
 /// Reconstructs cells before whitespace is flattened. Empty monetary columns
 /// stay empty; amounts are never assigned a direction from description text.
 class PdfStatementTable {
-  static const marker = 'BIZLENS_LOCAL_POSITIONED_TABLE_V1\n';
+  static const marker = 'HESABU_LOCAL_POSITIONED_TABLE_V1\n';
   static const header =
       'Receipt No.,Completion Time,Details,Transaction Status,Paid In,Withdrawn,Balance';
   final List<List<String>> _rows = [];

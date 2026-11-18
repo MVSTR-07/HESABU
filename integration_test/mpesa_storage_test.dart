@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/core/mpesa/sample_column_pdf_bytes.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/core/mpesa/sample_column_pdf_bytes.dart';
 
-
-import 'package:bizlens/core/sample_data.dart';
-import 'package:bizlens/data/device_store.dart';
-import 'package:bizlens/data/mpesa_import_service.dart';
+import 'package:hesabu/core/sample_data.dart';
+import 'package:hesabu/data/device_store.dart';
+import 'package:hesabu/data/mpesa_import_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -20,11 +19,11 @@ void main() {
     (tester) async {
       // A separately named REAL Windows key prevents touching the user's vault.
       final parent = await Directory.systemTemp.createTemp(
-        'bizlens-mpesa-native-',
+        'hesabu-mpesa-native-',
       );
       final root = Directory(p.join(parent.path, 'private'));
       final vaultName =
-          'bizlens.test.mpesa.$pid.${DateTime.now().microsecondsSinceEpoch}';
+          'hesabu.test.mpesa.$pid.${DateTime.now().microsecondsSinceEpoch}';
       final vault = DeviceKeyVault(keyName: vaultName);
       DeviceStore? store;
       try {
@@ -68,7 +67,7 @@ void main() {
         final originalKey = await vault.read();
         store.close();
         final raw = latin1.decode(
-          await File(p.join(root.path, 'bizlens.db')).readAsBytes(),
+          await File(p.join(root.path, 'hesabu.db')).readAsBytes(),
         );
         expect(raw.startsWith('SQLite format 3'), isFalse);
         expect(raw.contains('Wanjiku'), isFalse);
@@ -114,7 +113,7 @@ void main() {
         await vault.delete();
         final absolute = parent.absolute.path;
         if (p.isWithin(Directory.systemTemp.absolute.path, absolute) &&
-            p.basename(absolute).startsWith('bizlens-mpesa-native-')) {
+            p.basename(absolute).startsWith('hesabu-mpesa-native-')) {
           await parent.delete(recursive: true);
         }
       }

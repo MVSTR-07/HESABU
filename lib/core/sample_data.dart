@@ -3,6 +3,9 @@ import 'dart:typed_data';
 
 import 'mpesa/models.dart';
 import 'mpesa/sample_pdf_bytes.dart';
+import 'sales/sales_analysis.dart';
+import 'expenses/expense_analysis.dart';
+import 'stock/stock_analysis.dart';
 
 /// Fabricated fixtures only. Integer minor units avoid rounding money in SQLite.
 class SamplePayment {
@@ -116,3 +119,96 @@ Uint8List generateSampleMpesaCsv() {
 /// The source embeds only fabricated fixture bytes, not an actual statement.
 Uint8List generateSampleMpesaPdf() =>
     base64Decode(sampleMpesaEncryptedPdfBase64);
+
+/// Fabricated Stage 4 records for offline previews and manual testing only.
+List<SaleRecord> generateSampleSales() => [
+  _sale('001', 1, 'Maize flour 2kg', 3, 18000),
+  _sale('002', 2, 'Cooking oil 1L', 2, 26000),
+  _sale('003', 3, 'Rice 2kg', 2, 34000),
+  _sale('004', 4, 'Maize flour 2kg', 5, 18000),
+  _sale('005', 5, 'Sugar 1kg', 4, 16500),
+  _sale('006', 6, 'Cooking oil 1L', 3, 26000),
+  _sale('007', 7, 'Laundry soap', 6, 9000),
+  _sale('008', 8, 'Rice 2kg', 3, 34000),
+  _sale('009', 10, 'Maize flour 2kg', 2, 18000),
+  _sale('010', 11, 'Tea leaves 500g', 2, 22000),
+  _sale('011', 14, 'Cooking oil 1L', 4, 26000),
+  _sale('012', 16, 'Sugar 1kg', 3, 16500),
+];
+
+SaleRecord _sale(
+  String id,
+  int day,
+  String product,
+  int quantity,
+  int unitPriceMinor,
+) => SaleRecord(
+  id: 'DEMO-SALE-$id',
+  soldAt: DateTime.utc(2026, 10, day, 9 + day % 8),
+  product: product,
+  quantity: quantity,
+  unitPriceMinor: unitPriceMinor,
+  customerName: ['Akinyi Otieno', 'Peter Mwangi', 'Zawadi Hassan'][day % 3],
+);
+
+List<ExpenseRecord> generateSampleExpenses() => [
+  _expense('001', 1, 'Stock purchases', 'Wholesale flour and rice', 18500_00),
+  _expense('002', 2, 'Transport', 'Market delivery fare', 1200_00),
+  _expense('003', 4, 'Utilities', 'Electricity tokens', 2500_00),
+  _expense('004', 5, 'Rent', 'Shop rent', 18000_00),
+  _expense('005', 7, 'Stock purchases', 'Cooking oil and sugar', 24600_00),
+  _expense('006', 8, 'Packaging', 'Paper bags', 950_00),
+  _expense('007', 10, 'Transport', 'Supplier pickup', 800_00),
+  _expense('008', 12, 'Communications', 'Business airtime', 500_00),
+  _expense('009', 15, 'Stock purchases', 'Soap and tea leaves', 9100_00),
+  _expense('010', 19, 'Utilities', 'Water bill', 1750_00),
+];
+
+ExpenseRecord _expense(
+  String id,
+  int day,
+  String category,
+  String description,
+  int amountMinor,
+) => ExpenseRecord(
+  id: 'DEMO-EXPENSE-$id',
+  spentAt: DateTime.utc(2026, 10, day, 8 + day % 9),
+  category: category,
+  description: description,
+  amountMinor: amountMinor,
+  payee: 'Fabricated supplier',
+);
+
+List<StockItem> generateSampleStock() => [
+  _stock('001', 'Maize flour 2kg', 60, 30, 42, 1, 18000, 12),
+  _stock('002', 'Cooking oil 1L', 36, 24, 33, 0, 26000, 10),
+  _stock('003', 'Rice 2kg', 24, 12, 18, 0, 34000, 8),
+  _stock('004', 'Sugar 1kg', 40, 20, 29, 1, 16500, 10),
+  _stock('005', 'Laundry soap', 48, 24, 30, 2, 9000, 12),
+  _stock('006', 'Tea leaves 500g', 18, 12, 16, 0, 22000, 8),
+  _stock('007', 'Bottled water 1L', 24, 0, 24, 0, 6000, 6),
+  _stock('008', 'Bread', 20, 8, 26, 1, 5500, 5),
+];
+
+StockItem _stock(
+  String id,
+  String name,
+  int opening,
+  int received,
+  int sold,
+  int damaged,
+  int unitCostMinor,
+  int reorder,
+) => StockItem(
+  id: 'DEMO-STOCK-$id',
+  name: name,
+  sku: 'D-$id',
+  unit: 'units',
+  openingQuantity: opening,
+  receivedQuantity: received,
+  soldQuantity: sold,
+  damagedQuantity: damaged,
+  unitCostMinor: unitCostMinor,
+  reorderLevel: reorder,
+  updatedAt: DateTime.utc(2026, 10, 26, 12),
+);

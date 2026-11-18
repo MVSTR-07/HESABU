@@ -1,67 +1,59 @@
-# Stage 1 architecture
+# HESABU architecture and privacy
 
-BizLens is the temporary product name. HESABU is the GitHub repository.
+## How the app is organised
 
-## Boundaries
+- `lib/core/` contains Dart-only parsers, analysis rules, sample data and result
+  models. It has no Flutter UI or network dependency.
+- `lib/data/` owns the encrypted SQLite database, device key and repositories.
+- `lib/features/` contains the screens and workflows for each tool.
+- `lib/ui/` contains shared navigation, formatting, widgets and themes.
+- `lib/ai/` contains only a disabled interface. No provider or network client is
+  connected.
 
-- `lib/core/`: pure Dart parsers, analysers, fixtures and result models. No Flutter, database or network imports. Future modules implement `ToolModule<Input, Result>` with `importData()` and `analyse()`.
-- `lib/data/`: encrypted SQLite, private filesystem ownership and device key storage. `LocalStore` lets UI tests run without native plugins.
-- `lib/features/`: onboarding, demo identity, dashboard, settings; each future tool gets its own folder here. Cards come only from `features/tools/tool_registry.dart`.
-- `lib/ui/`: shared widgets, appearance and Kenyan formatting.
-- `lib/ai/`: disabled interface. There is no provider implementation, network client or enable switch. Deleting this folder removes the optional interface without affecting base analysis.
-- `lib/app_controller.dart`: local navigation, demo session, entitlement and settings state.
+Screens call local repositories; those repositories use SQLCipher. There is no
+business-data server path. The demo account and paid-plan switches are local
+placeholders, not real authentication or billing.
 
-## Data flow and storage
+## Local storage
 
-UI → controller → LocalStore → SQLCipher. No business-data network path exists.
-The only Stage 1 data is a local demo email/session, preferences, demo entitlement
-and fabricated payment fixtures. No actual account service exists. The local demo
-is not authentication or payment enforcement; anyone using the same device can
-enter its demo email. Production auth and entitlement remain future work and must
-not receive any business record, result, password or diagnostic payload.
+The database is encrypted with SQLCipher. A random key is held by the operating
+system's protected storage, not in the project or database. Windows stores the
+workspace under the current user's local application data; Android uses private
+app storage. Neither location belongs in a synced project folder.
 
-The database is at `%LOCALAPPDATA%\BizLens\private\bizlens.db` on Windows,
-outside this OneDrive-backed source tree. Android uses private application support
-storage. Every database open requires the device-protected random 256-bit key;
-keys are neither embedded nor written to source/plaintext settings. Losing the
-key locks existing records instead of silently replacing them. The app verifies
-SQLCipher availability and verifies the key before using the schema. Native
-temporary SQL storage stays in memory. Business imports must not be copied into
-public temporary/download folders in later stages.
+On Windows, HESABU safely migrates the existing encrypted key store and database
+to the HESABU application identity on first launch after the rename. The files
+are moved without decrypting or logging their contents. If both old and new
+locations contain files, the app stops with a storage error rather than replacing
+either copy. A missing key also locks existing data instead of creating a new
+key that would make the old database unreadable.
 
-Android release manifest has no Internet permission and disables cloud backups
-and device transfer. Debug/profile manifests allow the Flutter debugger's local
-network connection. No business information is transmitted by app code. SDK and
-package downloads are development tooling, separate from the app's runtime.
-User-controlled OS backup tools can copy local files; Windows users must not
-configure cloud backup of the private data directory. SQLCipher still encrypts
-those bytes at rest. No software can promise forensic deletion from SSD storage;
-reset deletes app files and the old device key, then creates a fresh empty DB.
+Imported files are read locally. Passwords are transient input and are never
+stored or logged. Original files remain where the owner selected them. Saved
+records and analysis results live in the encrypted database. No business data,
+results or diagnostics are sent to a service. Optional AI remains off; any future
+transmission would need a clear, per-request consent step.
 
-## Deletion
+## Cleanup and recovery
 
-Cache-only cleanup removes `private/cache` and preserves the DB. Full reset closes
-SQLite, removes only BizLens's key, deletes the contents of the owned private
-directory (including journals and future cached imports), and generates a new key
-and empty DB. It clears demo identity, plan and appearance. It does not delete
-original user import files. Cleanup refuses paths outside the owned directory,
-does not follow links, and reports success only after completing the operation.
-Failure locks the UI. Startup offers a separate confirmed reset if a key is lost.
+**Clear cache** removes saved app workspaces and cached imports while retaining
+settings. **Delete all data** removes the app's local records and key, then makes
+a fresh empty encrypted database. Both actions operate only within HESABU's
+owned local storage. They do not remove original imported files. Cleanup avoids
+following links outside the app directory and reports failure instead of
+claiming a partial wipe succeeded.
 
-## Upcoming stages (not implemented)
+The Windows rename migration keeps the previous encrypted files in place until
+the new app can open them. It does not silently discard a conflicting copy.
 
-2. `features/mpesa/` + pure Dart statement parsers and normalised transactions.
-3. `features/customers/` + identity merging, RFM and adjustable drop-off logic.
-4. Independent stock, sales and expense modules.
-5. P&L, debts, imports/cleaning and exports.
-6. Optional paid AI: explicit payload disclosure and consent for every send.
+## Analysis boundaries
 
-Do not build any next stage until the user has manually tested and approved it.
+The M-Pesa, customer, stock, sales and expense analysis runs in local Dart code.
+The app uses KES and Kenyan date conventions. Customer contact actions require
+an explicit tap and are handed to the device's phone or messaging app; HESABU
+does not place calls or send messages automatically.
 
-## Dependencies
-
-SQLite configuration uses the SQLCipher build selected by sqlite3's native hooks:
-https://github.com/simolus3/sqlite3.dart/blob/main/sqlite3/doc/hook.md
-Device key protection: https://pub.dev/packages/flutter_secure_storage
-Windows build prerequisites: https://docs.flutter.dev/platform-integration/windows/setup
-Review SQLCipher/OpenSSL and other dependency notices before distribution.
+Account email and subscription status are the only data that a future account
+service may store. No account service is currently connected. Android release
+configuration disables cloud backup and device transfer; Android device testing
+is still pending.

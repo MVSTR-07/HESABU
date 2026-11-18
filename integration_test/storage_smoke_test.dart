@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bizlens/app_controller.dart';
-import 'package:bizlens/data/device_store.dart';
+import 'package:hesabu/app_controller.dart';
+import 'package:hesabu/data/device_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -34,7 +34,7 @@ void main() {
     expect(await vault.read(), originalKey);
     if (Platform.isWindows) {
       final database = File(
-        '${Platform.environment['LOCALAPPDATA']}/BizLens/private/bizlens.db',
+        '${Platform.environment['LOCALAPPDATA']}/HESABU/private/hesabu.db',
       );
       final bytes = await database.readAsBytes();
       final raw = latin1.decode(bytes);

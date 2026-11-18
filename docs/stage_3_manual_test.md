@@ -1,8 +1,7 @@
-# Stage 3 manual sign-off
+# Stage 3 manual test
 
-M-Pesa PDF layout compatibility remains deferred, as the user explicitly
-requested. Stage 3 can be tested without a statement. No Canva styling or Stage
-4 work is included. Use fabricated data for deletion and contact testing.
+The project owner has signed off Stage 3. Use fabricated data if you want to
+revisit the workflow. No real statements or customer records are needed.
 
 ```powershell
 .\tool\flutter.ps1 run -d windows
@@ -64,5 +63,5 @@ and only classified customer receipts contribute; fees/Fuliza/reversals do not.
 10. Load samples again, then Delete all data: verify samples, profile, customer
     data and settings disappear. Test both themes and a narrow window.
 
-Stop for the user's Stage 3 sign-off. Do not start Stage 4. The user subsequently
-explicitly resumed PDF compatibility work; its validation remains separate.
+Stage 3 has been signed off. Android device behavior and the limits of additional
+PDF statement layouts remain separate follow-up checks.

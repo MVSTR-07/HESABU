@@ -2,16 +2,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bizlens/core/mpesa/analyser.dart';
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/core/mpesa/sample_column_pdf_bytes.dart';
-import 'package:bizlens/core/mpesa/statement_parser.dart';
-import 'package:bizlens/core/sample_data.dart';
-import 'package:bizlens/data/mpesa_pdf_reader.dart';
+import 'package:hesabu/core/mpesa/analyser.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/core/mpesa/sample_column_pdf_bytes.dart';
+import 'package:hesabu/core/mpesa/statement_parser.dart';
+import 'package:hesabu/core/sample_data.dart';
+import 'package:hesabu/data/mpesa_pdf_reader.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:pdfrx_engine/pdfrx_engine.dart';
-import 'package:bizlens/data/pdf_table_rules.dart';
-import 'package:bizlens/core/mpesa/ruled_statement_table.dart';
+import 'package:hesabu/data/pdf_table_rules.dart';
+import 'package:hesabu/core/mpesa/ruled_statement_table.dart';
 
 void main() {
   test('whole-document diagnostics group failures across 157 pages', () {
@@ -43,7 +43,7 @@ void main() {
   late LocalPdfTextReader reader;
   setUpAll(() async {
     directory = await Directory.systemTemp.createTemp(
-      'bizlens-fabricated-pdf-test-',
+      'hesabu-fabricated-pdf-test-',
     );
     reader = LocalPdfTextReader(cachePath: directory.path);
   });

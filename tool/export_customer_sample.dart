@@ -1,7 +1,7 @@
 // Fabricated data only. Does not access the local business database.
 import 'dart:io';
 
-import 'package:bizlens/core/customers/customer_analysis.dart';
+import 'package:hesabu/core/customers/customer_analysis.dart';
 
 void main() {
   String q(String s) => '"${s.replaceAll('"', '""')}"';

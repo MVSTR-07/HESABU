@@ -1,7 +1,7 @@
 {
   "version": "0.2.0",
   "configurations": [
-    {"name": "BizLens · Windows", "request": "launch", "type": "dart", "deviceId": "windows", "program": "lib/main.dart"},
-    {"name": "BizLens · selected Android device", "request": "launch", "type": "dart", "program": "lib/main.dart"}
+    {"name": "HESABU · Windows", "request": "launch", "type": "dart", "deviceId": "windows", "program": "lib/main.dart"},
+    {"name": "HESABU · selected Android device", "request": "launch", "type": "dart", "program": "lib/main.dart"}
   ]
 }

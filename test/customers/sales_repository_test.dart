@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:bizlens/core/customers/customer_analysis.dart';
-import 'package:bizlens/core/customers/sales_parser.dart';
-import 'package:bizlens/data/customer_repository.dart';
-import 'package:bizlens/data/device_store.dart';
-import 'package:bizlens/data/mpesa_import_service.dart';
-import 'package:bizlens/core/sample_data.dart';
+import 'package:hesabu/core/customers/customer_analysis.dart';
+import 'package:hesabu/core/customers/sales_parser.dart';
+import 'package:hesabu/data/customer_repository.dart';
+import 'package:hesabu/data/device_store.dart';
+import 'package:hesabu/data/mpesa_import_service.dart';
+import 'package:hesabu/core/sample_data.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../support/memory_store.dart';
@@ -116,7 +116,7 @@ void main() {
   test(
     'customer data persists in SQLCipher and both deletion actions erase it',
     () async {
-      final root = await Directory.systemTemp.createTemp('bizlens-customers-');
+      final root = await Directory.systemTemp.createTemp('hesabu-customers-');
       final vault = MemoryKeyVault();
       DeviceStore? store;
       try {
@@ -125,7 +125,7 @@ void main() {
         store.writeSetting('account_email', 'fabricated@example.test');
         store.close();
         final raw = latin1.decode(
-          await File('${root.path}/bizlens.db').readAsBytes(),
+          await File('${root.path}/hesabu.db').readAsBytes(),
         );
         expect(raw, isNot(contains('Amina')));
         expect(raw.startsWith('SQLite format 3'), isFalse);

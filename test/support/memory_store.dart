@@ -1,8 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/data/device_store.dart';
-import 'package:bizlens/data/local_store.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/data/device_store.dart';
+import 'package:hesabu/data/local_store.dart';
+import 'package:hesabu/core/sales/sales_analysis.dart';
+import 'package:hesabu/core/expenses/expense_analysis.dart';
+import 'package:hesabu/core/stock/stock_analysis.dart';
 
 class MemoryKeyVault implements KeyVault {
   String? value;
@@ -23,6 +26,9 @@ class MemoryKeyVault implements KeyVault {
 class MemoryStore implements LocalStore {
   final statements = <int, StoredStatement>{};
   final hashes = <String, int>{};
+  final salesRows = <String, SaleRecord>{};
+  final expenseRows = <String, ExpenseRecord>{};
+  final stockRows = <String, StockItem>{};
   @override
   String? get privateCachePath => null;
   final values = <String, String>{};
@@ -46,6 +52,9 @@ class MemoryStore implements LocalStore {
     values.remove('customer_workspace');
     statements.clear();
     hashes.clear();
+    salesRows.clear();
+    expenseRows.clear();
+    stockRows.clear();
   }
 
   @override
@@ -54,6 +63,9 @@ class MemoryStore implements LocalStore {
     _count = 0;
     statements.clear();
     hashes.clear();
+    salesRows.clear();
+    expenseRows.clear();
+    stockRows.clear();
   }
 
   @override
@@ -97,4 +109,23 @@ class MemoryStore implements LocalStore {
       warnings: s.warnings,
     );
   }
+
+  @override
+  List<SaleRecord> listSales() => salesRows.values.toList();
+  @override
+  void saveSale(SaleRecord sale) => salesRows[sale.id] = sale;
+  @override
+  void deleteSale(String id) => salesRows.remove(id);
+  @override
+  List<ExpenseRecord> listExpenses() => expenseRows.values.toList();
+  @override
+  void saveExpense(ExpenseRecord expense) => expenseRows[expense.id] = expense;
+  @override
+  void deleteExpense(String id) => expenseRows.remove(id);
+  @override
+  List<StockItem> listStockItems() => stockRows.values.toList();
+  @override
+  void saveStockItem(StockItem item) => stockRows[item.id] = item;
+  @override
+  void deleteStockItem(String id) => stockRows.remove(id);
 }

@@ -55,9 +55,5 @@ business_data/
 business-data/
 sample_output/
 
-# Test transcripts can contain this machine's local paths or diagnostics.
-# Keep existing tracked Stage 1 evidence; do not add new raw console captures.
-docs/evidence/hesabu-*.txt
-docs/evidence/mpesa-*.txt
-docs/evidence/stage-2-*.txt
-docs/evidence/stage-3-*.txt
+# Raw diagnostic transcripts may contain machine paths or private data.
+docs/evidence/

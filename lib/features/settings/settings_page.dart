@@ -12,9 +12,9 @@ class SettingsPage extends StatelessWidget {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Clear cache and saved M-Pesa data?'),
+        title: const Text('Clear cache and saved business data?'),
         content: const Text(
-          'This removes all imported statements, sales, customer merges, saved results and cached files from HESABU. Your demo account, appearance settings and original files outside HESABU are preserved. This cannot be undone.',
+          'This removes imported statements, sales and expense records, stock records, customer merges, saved results and cached files from HESABU. Your demo account, appearance settings and original files outside HESABU are preserved. This cannot be undone.',
         ),
         actions: [
           TextButton(
@@ -23,7 +23,7 @@ class SettingsPage extends StatelessWidget {
           ),
           FilledButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Clear imports and cache'),
+            child: const Text('Clear business data and cache'),
           ),
         ],
       ),
@@ -35,7 +35,7 @@ class SettingsPage extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text(
-              'Imported statements, saved results and cache cleared. Demo account and settings preserved.',
+              'Saved business data and cache cleared. Demo account and settings preserved.',
             ),
           ),
         );
@@ -207,7 +207,7 @@ class SettingsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 const Text(
-                  'Clear cache also erases imported statements, sales, customer merges and results. Delete all data resets the entire local workspace.',
+                  'Clear cache also erases imported statements, sales, expenses, stock records, customer merges and results. Delete all data resets the entire local workspace.',
                 ),
                 const SizedBox(height: 16),
                 Wrap(

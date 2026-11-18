@@ -2,7 +2,17 @@ import 'package:flutter/material.dart';
 
 import 'data/local_store.dart';
 
-enum AppPage { intro, account, dashboard, settings, mpesa, customers }
+enum AppPage {
+  intro,
+  account,
+  dashboard,
+  settings,
+  mpesa,
+  customers,
+  stock,
+  sales,
+  expenses,
+}
 
 /// Local-only demo identity and entitlement. No server, payment or password
 /// handling exists in Stage 1. A future auth adapter must accept email only.

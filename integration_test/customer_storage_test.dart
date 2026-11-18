@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:bizlens/data/customer_repository.dart';
-import 'package:bizlens/data/device_store.dart';
+import 'package:hesabu/data/customer_repository.dart';
+import 'package:hesabu/data/device_store.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -12,11 +12,9 @@ void main() {
   testWidgets('Windows customer persistence, merges, config and deletion', (
     tester,
   ) async {
-    final root = await Directory.systemTemp.createTemp(
-      'bizlens-stage3-native-',
-    );
+    final root = await Directory.systemTemp.createTemp('hesabu-stage3-native-');
     final keyName =
-        'bizlens.test.customers.$pid.${DateTime.now().microsecondsSinceEpoch}';
+        'hesabu.test.customers.$pid.${DateTime.now().microsecondsSinceEpoch}';
     final vault = DeviceKeyVault(keyName: keyName);
     DeviceStore? store;
     final date = DateTime.utc(2026, 10, 27, 12);
@@ -53,7 +51,7 @@ void main() {
       store?.close();
       await vault.delete();
       if (p.isWithin(Directory.systemTemp.absolute.path, root.absolute.path) &&
-          p.basename(root.path).startsWith('bizlens-stage3-native-')) {
+          p.basename(root.path).startsWith('hesabu-stage3-native-')) {
         await root.delete(recursive: true);
       }
     }

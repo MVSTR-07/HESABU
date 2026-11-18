@@ -1,7 +1,7 @@
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/core/mpesa/pdf_table_layout.dart';
-import 'package:bizlens/core/mpesa/ruled_statement_table.dart';
-import 'package:bizlens/core/mpesa/statement_parser.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/core/mpesa/pdf_table_layout.dart';
+import 'package:hesabu/core/mpesa/ruled_statement_table.dart';
+import 'package:hesabu/core/mpesa/statement_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 StatementWord w(String value, double x, double y) =>

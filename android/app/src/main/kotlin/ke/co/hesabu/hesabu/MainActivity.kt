@@ -1,4 +1,4 @@
-package ke.co.bizlens.bizlens
+package ke.co.hesabu.hesabu
 
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -16,7 +16,7 @@ class MainActivity : FlutterActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "bizlens/local_statement_picker")
+        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "hesabu/local_statement_picker")
             .setMethodCallHandler { call, result ->
                 if (call.method != "open") { result.notImplemented() }
                 else if (pending != null) { result.error("busy", "A file dialog is already open.", null) }

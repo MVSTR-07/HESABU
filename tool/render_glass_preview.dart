@@ -3,11 +3,11 @@
 import 'dart:io';
 import 'dart:ui' as ui;
 
-import 'package:bizlens/app.dart';
-import 'package:bizlens/app_controller.dart';
-import 'package:bizlens/core/sample_data.dart';
-import 'package:bizlens/data/customer_repository.dart';
-import 'package:bizlens/data/mpesa_import_service.dart';
+import 'package:hesabu/app.dart';
+import 'package:hesabu/app_controller.dart';
+import 'package:hesabu/core/sample_data.dart';
+import 'package:hesabu/data/customer_repository.dart';
+import 'package:hesabu/data/mpesa_import_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';

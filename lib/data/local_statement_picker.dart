@@ -18,7 +18,7 @@ class LocalStatementPicker {
   Future<SelectedStatement?> pick() async {
     if (Platform.isAndroid) {
       // Do not call file_selector on Android: it makes a plaintext cache copy.
-      final result = await const MethodChannel('bizlens/local_statement_picker')
+      final result = await const MethodChannel('hesabu/local_statement_picker')
           .invokeMapMethod<String, dynamic>('open');
       if (result == null) return null;
       return SelectedStatement(

@@ -1,91 +1,76 @@
 # HESABU
 
-Private on-device data analysis for small businesses in Kenya. Flutter/Dart,
-Windows first and Android next. **Stages 2 and 3 manually signed off on 27/10/2026.**
-HESABU is the application and repository name.
+**A clearer view of your business.**
 
-## Run from VS Code
+HESABU is a Flutter app for small businesses in Kenya. It helps turn everyday
+records into useful answers, while keeping business data on the device. The
+first release is being built for Windows, with Android support planned from the
+same Dart codebase.
 
-Open this folder in VS Code and install the recommended Flutter extension.
-This machine's Flutter SDK is at `a local Flutter SDK`. The wrapper below
-finds either that SDK or a normal Flutter installation on PATH.
+This repository is a work in progress. The M-Pesa and customer tools have been
+manually checked by the project owner. Stock, sales and expense tools are built
+and are waiting for that same hands-on check. HESABU is not yet a finished or
+published product.
+
+## What you can explore
+
+- **M-Pesa statements:** import CSV or supported text-based PDF statements and
+  review money in and out, fees, activity patterns and rule-based flags.
+- **Customer performance:** review payment history, customer segments,
+  concentration and personalised drop-off signals.
+- **Stock, sales and expenses:** enter records locally and explore summaries.
+  These tools are the current testing focus.
+- **Light and dark appearance:** the shared interface uses a dark-blue glass
+  style, with a light option.
+
+Analysis runs locally. Imported records and results are kept in an encrypted
+SQLite database on the device; they are not sent to a HESABU server. The account
+and paid-plan screens are clearly labelled demos: there is no real sign-in,
+billing or account server yet. The optional AI area is disabled and no AI service
+is connected.
+
+## Run it on Windows
+
+Install Flutter and open this folder in VS Code. On Windows, Flutter also needs
+Visual Studio or Build Tools with the **Desktop development with C++** workload.
+Then run these commands in PowerShell from the project folder:
 
 ```powershell
 .\tool\flutter.ps1 doctor -v
 .\tool\flutter.ps1 pub get
-.\tool\flutter.ps1 analyze
-.\tool\flutter.ps1 test
 .\tool\flutter.ps1 run -d windows
 ```
 
-If Flutter is on PATH these are standard `flutter` commands. A Windows run/build
-requires Developer Mode and Visual Studio with **Desktop development with C++**,
-including CMake, MSVC, a Windows SDK and **C++ ATL for the installed toolset**
-(required by Windows secure key storage). VS Code is the editor; it does not replace
-these native compiler tools. Android later requires the Android SDK and a device.
-
-## What Stage 1 includes
-
-- Intro, local demo sign-up/login, dashboard and Settings.
-- Tool cards registered in one list and displayed in two columns; M-Pesa opens
-  its analyser and later tools show their planned stages.
-- Clearly labelled free/paid demo gating; no real subscriptions or payments.
-- SQLCipher encrypted SQLite with a random key protected by device secure storage.
-- Confirmed full deletion, import/cache cleanup, light/dark/device themes, KES and Kenyan dates.
-- Twelve fabricated demo payments to verify Stage 1 storage.
-- A disabled, removable AI interface and no runtime server/network integration.
-
-Windows data lives in `%LOCALAPPDATA%\BizLens\private`, **not this OneDrive folder**. The internal storage location retains its original name so existing encrypted HESABU installs continue to find their data.
-Android backups and device transfer are excluded. Never commit real statements,
-databases, keys, exports or customer information to this repository.
-
-## Test and development
-
-See [the manual checklist](docs/stage_1_manual_test.md) and
-[architecture and privacy boundaries](docs/architecture.md). Automated tests use
-fabricated data and disposable test folders. The separate integration test exercises
-the real device vault and should be run only on a development device/profile.
-
-`flutter clean` removes rebuildable project outputs when you finish diagnosis.
-Keep `pubspec.lock` and the installed Flutter SDK: they are useful development
-dependencies, not disposable build leftovers. Never use broad disk cleanup.
-
-## Stage 2: M-Pesa
-
-CSV and password-protected text PDF import, local classification, cash movement,
-period charts/tables, busiest times, parties, fees/Fuliza cost, observed balance
-and configurable anomaly rules. Sources and results stay in encrypted SQLite.
-Clear cache now also removes saved M-Pesa imports/results; originals are untouched.
-
-Follow [the Stage 2 checklist](docs/stage_2_manual_test.md) and read
-[supported formats and analysis definitions](docs/stage_2_architecture.md).
-Scanned PDFs need a CSV alternative. The Android bridge is implemented but has
-not been device-tested. Existing UI styling is retained.
+To check the code locally:
 
 ```powershell
-.\tool\flutter.ps1 test --concurrency=1
-.\tool\flutter.ps1 test integration_test/mpesa_storage_test.dart -d windows
-dart run tool/export_mpesa_sample.dart
+.\tool\flutter.ps1 analyze --no-pub
+.\tool\flutter.ps1 test --no-pub --concurrency=1
+.\tool\flutter.ps1 build windows --profile --no-pub
 ```
 
-The last command exports both fabricated statement formats to ignored
-`sample_output/`. Its public sample PDF password is `demo-only-2026`.
-The generator source is in `tool/generate_mpesa_fixtures.py`; no real PDF/CSV
-statement files belong in Git.
+Tests use fabricated records. Never use a real statement or customer details in
+a sample, test, screenshot or Git commit. The app's **Delete all data / clear
+cache** control clears the app's local records; original files selected for
+import are left where they are.
 
-## Stage 3: customer performance
+## Project map
 
-Local RFM, personalised drop-off, ranked clients, concentration, monthly
-retention/churn, manual identity merges/undo, sales CSV import and intentional
-phone/SMS composer actions. Enable **Preview paid plan** in Settings, then open
-Customer performance and **Use fabricated customers**. No statement is needed.
+- `lib/core/` — Dart parsers, analysis rules, sample data and result models.
+- `lib/data/` — encrypted local storage and repositories.
+- `lib/features/` — screens for each tool and shared navigation.
+- `lib/ui/` — reusable widgets, theme and formatting.
+- `lib/ai/` — disabled interface kept separate so it can be removed cleanly.
+- `test/` and `integration_test/` — fabricated-data and local-storage checks.
+- `docs/` — architecture notes, validation and manual checklists.
 
-See [the Stage 3 checklist](docs/stage_3_manual_test.md) and
-[definitions/privacy](docs/stage_3_architecture.md).
+## Where the work stands
 
-**Stages 2 and 3 are signed off:** the user confirmed the M-Pesa Analyser and
-Customer Performance work. Stage 4 (Stock, Sales and Expense analysers) is now
-authorized; Stage 5 awaits Stage 4 manual sign-off.
+Stages 1, 2 and 3 have been signed off by the project owner. Stage 4 (stock,
+sales and expenses) is implemented and awaits manual testing. Stage 5 has not
+started. Android device testing and final M-Pesa PDF compatibility checks are
+still needed before a public product release.
 
-## Appearance
-The shared HESABU interface uses a dark-blue glass treatment on Windows and Android, with a selectable light appearance. UI ornament is drawn locally in Flutter; the separate Canva-generated artwork is reserved for advertising posters and is not an application background.
+The repository is named **HESABU** and is owned by **MVSTR-07**. The project is
+being prepared for public review; do not treat a GitHub copy as a hosted service
+or upload real business records to it.

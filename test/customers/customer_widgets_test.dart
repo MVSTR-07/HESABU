@@ -1,6 +1,6 @@
-import 'package:bizlens/app.dart';
-import 'package:bizlens/app_controller.dart';
-import 'package:bizlens/data/customer_repository.dart';
+import 'package:hesabu/app.dart';
+import 'package:hesabu/app_controller.dart';
+import 'package:hesabu/data/customer_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

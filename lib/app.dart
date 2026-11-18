@@ -7,6 +7,9 @@ import 'features/onboarding/intro_page.dart';
 import 'features/settings/settings_page.dart';
 import 'features/mpesa/mpesa_page.dart';
 import 'features/customers/customers_page.dart';
+import 'features/stock/stock_page.dart';
+import 'features/sales/sales_page.dart';
+import 'features/expenses/expenses_page.dart';
 import 'ui/theme.dart';
 import 'ui/glass.dart';
 
@@ -51,6 +54,9 @@ class _Workspace extends StatelessWidget {
       AppPage.settings => SettingsPage(controller: controller),
       AppPage.mpesa => MpesaPage(controller: controller),
       AppPage.customers => CustomersPage(controller: controller),
+      AppPage.stock => StockPage(controller: controller),
+      AppPage.sales => SalesPage(controller: controller),
+      AppPage.expenses => ExpensesPage(controller: controller),
     };
     final floatingNavigation = controller.signedIn;
     final visibleNavigation =

@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bizlens/core/sample_data.dart';
+import 'package:hesabu/core/sample_data.dart';
 
 Future<void> main(List<String> args) async {
   final directory = Directory('sample_output')..createSync(recursive: true);

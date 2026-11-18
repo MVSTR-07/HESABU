@@ -1,5 +1,5 @@
-import 'package:bizlens/core/mpesa/classifier.dart';
-import 'package:bizlens/core/mpesa/models.dart';
+import 'package:hesabu/core/mpesa/classifier.dart';
+import 'package:hesabu/core/mpesa/models.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 MpesaTransaction fixtureTx(

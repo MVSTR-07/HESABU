@@ -1,13 +1,13 @@
 import 'dart:typed_data';
 
-import 'package:bizlens/app.dart';
-import 'package:bizlens/app_controller.dart';
-import 'package:bizlens/core/mpesa/models.dart';
-import 'package:bizlens/core/sample_data.dart';
-import 'package:bizlens/data/local_statement_picker.dart';
-import 'package:bizlens/data/mpesa_import_service.dart';
-import 'package:bizlens/data/mpesa_pdf_reader.dart';
-import 'package:bizlens/features/mpesa/mpesa_page.dart';
+import 'package:hesabu/app.dart';
+import 'package:hesabu/app_controller.dart';
+import 'package:hesabu/core/mpesa/models.dart';
+import 'package:hesabu/core/sample_data.dart';
+import 'package:hesabu/data/local_statement_picker.dart';
+import 'package:hesabu/data/mpesa_import_service.dart';
+import 'package:hesabu/data/mpesa_pdf_reader.dart';
+import 'package:hesabu/features/mpesa/mpesa_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -173,7 +173,7 @@ void main() {
       expect(store.statements.length, 1);
       await tester.tap(button);
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Clear imports and cache'));
+      await tester.tap(find.text('Clear business data and cache'));
       await tester.pumpAndSettle();
       expect(store.statements, isEmpty);
       expect(controller.email, 'test@example.test');

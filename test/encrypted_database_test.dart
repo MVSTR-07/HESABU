@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:bizlens/data/encrypted_database.dart';
+import 'package:hesabu/data/encrypted_database.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
 
@@ -10,7 +10,7 @@ void main() {
   final key = List.filled(64, 'a').join();
   setUp(() async {
     directory = await Directory.systemTemp.createTemp(
-      'bizlens-encryption-test-',
+      'hesabu-encryption-test-',
     );
   });
   tearDown(() async {
