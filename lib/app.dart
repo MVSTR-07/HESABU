@@ -96,7 +96,10 @@ class _Workspace extends StatelessWidget {
             ),
           ),
           actions: [
-            if (controller.signedIn)
+            // Tool pages already have a back arrow. Hiding the duplicate
+            // dashboard action there keeps the app bar usable on narrow phones
+            // and with large accessibility text.
+            if (controller.signedIn && !_isToolPage(controller.page))
               IconButton(
                 tooltip: 'Dashboard',
                 icon: const Icon(Icons.dashboard_outlined),

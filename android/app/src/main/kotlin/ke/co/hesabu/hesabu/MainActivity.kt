@@ -6,6 +6,8 @@ import io.flutter.plugin.common.MethodChannel
 import android.app.Activity
 import android.content.Intent
 import android.provider.OpenableColumns
+import android.os.Bundle
+import android.view.WindowManager
 import java.io.ByteArrayOutputStream
 
 /** Streams a LOCAL document to Dart memory; never creates a plaintext cache. */
@@ -13,6 +15,16 @@ class MainActivity : FlutterActivity() {
     private var pending: MethodChannel.Result? = null
     private val requestCode = 7402
     private val maxBytes = 25 * 1024 * 1024
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Business records and summaries must not appear in screenshots,
+        // screen recordings or the Android task-switcher preview.
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE,
+        )
+        super.onCreate(savedInstanceState)
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
