@@ -7,9 +7,10 @@ records into useful answers, while keeping business data on the device. The
 first release is being built for Windows, with Android support planned from the
 same Dart codebase.
 
-This repository is a work in progress. The M-Pesa and customer tools have been
-manually checked by the project owner. The stock, sales and expense tools have
-also been approved. HESABU is not yet a finished or published product.
+I am building this repository in stages. The M-Pesa, customer, stock, sales and
+expense tools are in place, and I am continuing to expand the financial tools
+and test the Windows and Android experience. HESABU is not yet a finished
+published product.
 
 ## What you can explore
 
@@ -20,8 +21,8 @@ also been approved. HESABU is not yet a finished or published product.
 - **Stock, sales and expenses:** enter records locally and explore summaries.
 - **Profit and loss, balances, imports and reports:** create a simple working
   surplus view, track customer/supplier balances, review CSV/Excel rows before
-  import, and save local PDF/Excel summaries. These Stage 5 tools are ready for
-  owner testing; they are not a replacement for formal accounts.
+  import, and save local PDF/Excel summaries. These tools are intended as a
+  practical working view, not a replacement for formal accounts.
 - **Light and dark appearance:** the shared interface uses a dark-blue glass
   style, with a light option.
 
@@ -68,10 +69,10 @@ import are left where they are.
 
 ## Where the work stands
 
-Stages 1 through 4 are complete. Stage 5 is
-implemented and awaiting testing.
-Android device testing and broader M-Pesa PDF compatibility checks are still
-needed before a finished product release.
+I have a working Windows build with encrypted local storage, M-Pesa and customer
+analysis, stock/sales/expense records, financial summaries, debt tracking,
+tabular imports and local report export. I am continuing Android testing,
+broader M-Pesa PDF compatibility work and the workspace model before release.
 
 The repository is named **HESABU** and is owned by **MVSTR-07**. The project is
 being prepared for public review; do not treat a GitHub copy as a hosted service
