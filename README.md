@@ -32,6 +32,12 @@ and paid-plan screens are clearly labelled demos: there is no real sign-in,
 billing or account server yet. The optional AI area is disabled and no AI service
 is connected.
 
+I have kept the production security boundaries separate from the demo flow:
+authentication and subscription providers are interfaces, passwords are never
+stored by HESABU, and the business database contains no billing credentials.
+See `docs/privacy_policy.md` and `docs/google_play_security_checklist.md` for
+the production hand-off checklist.
+
 ## Run it on Windows
 
 Install Flutter and open this folder in VS Code. On Windows, Flutter also needs
