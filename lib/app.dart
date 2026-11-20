@@ -75,140 +75,156 @@ class _Workspace extends StatelessWidget {
         floatingNavigation &&
         (controller.page == AppPage.dashboard ||
             controller.page == AppPage.settings);
-    return HesabuBackdrop(
-      child: Scaffold(
-        drawer: controller.signedIn
-            ? _MobileNavigationDrawer(controller: controller)
-            : null,
-        appBar: AppBar(
-          toolbarHeight: 76,
-          leading: _isToolPage(controller.page)
-              ? IconButton(
-                  tooltip: 'Back to dashboard',
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: controller.busy
-                      ? null
-                      : () => controller.navigate(AppPage.dashboard),
-                )
+    return PopScope(
+      // Android back/gesture returns from a tool or management page to the
+      // dashboard instead of closing the app unexpectedly.
+      canPop:
+          controller.page == AppPage.dashboard ||
+          controller.page == AppPage.intro,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && controller.page != AppPage.dashboard) {
+          controller.navigate(AppPage.dashboard);
+        }
+      },
+      child: HesabuBackdrop(
+        child: Scaffold(
+          drawer: controller.signedIn
+              ? _MobileNavigationDrawer(controller: controller)
               : null,
-          title: const HesabuBrand(compact: true),
-          flexibleSpace: DecoratedBox(
-            decoration: BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: Theme.of(context).colorScheme.onSurface
-                      .withValues(alpha: .06),
+          appBar: AppBar(
+            toolbarHeight: 76,
+            leading: _isToolPage(controller.page)
+                ? IconButton(
+                    tooltip: 'Back to dashboard',
+                    icon: const Icon(Icons.arrow_back),
+                    onPressed: controller.busy
+                        ? null
+                        : () => controller.navigate(AppPage.dashboard),
+                  )
+                : null,
+            title: const HesabuBrand(compact: true),
+            flexibleSpace: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: Theme.of(context).colorScheme.onSurface
+                        .withValues(alpha: .06),
+                  ),
                 ),
               ),
             ),
+            actions: [
+              // Tool pages already have a back arrow. Hiding the duplicate
+              // dashboard action there keeps the app bar usable on narrow phones
+              // and with large accessibility text.
+              if (controller.signedIn && !_isToolPage(controller.page))
+                IconButton(
+                  tooltip: 'Dashboard',
+                  icon: const Icon(Icons.dashboard_outlined),
+                  onPressed: controller.busy
+                      ? null
+                      : () => controller.navigate(AppPage.dashboard),
+                ),
+              if (controller.signedIn)
+                IconButton(
+                  tooltip: 'Workspaces',
+                  icon: const Icon(Icons.business_center_outlined),
+                  onPressed: controller.busy
+                      ? null
+                      : () => controller.navigate(AppPage.workspaces),
+                ),
+              if (!controller.signedIn && controller.page != AppPage.intro)
+                IconButton(
+                  tooltip: 'Introduction',
+                  icon: const Icon(Icons.home_outlined),
+                  onPressed: controller.busy
+                      ? null
+                      : () => controller.navigate(AppPage.intro),
+                ),
+              IconButton(
+                tooltip: 'Settings',
+                icon: const Icon(Icons.settings_outlined),
+                onPressed: controller.busy
+                    ? null
+                    : () => controller.navigate(AppPage.settings),
+              ),
+              const SizedBox(width: 12),
+            ],
           ),
-          actions: [
-            // Tool pages already have a back arrow. Hiding the duplicate
-            // dashboard action there keeps the app bar usable on narrow phones
-            // and with large accessibility text.
-            if (controller.signedIn && !_isToolPage(controller.page))
-              IconButton(
-                tooltip: 'Dashboard',
-                icon: const Icon(Icons.dashboard_outlined),
-                onPressed: controller.busy
-                    ? null
-                    : () => controller.navigate(AppPage.dashboard),
-              ),
-            if (controller.signedIn)
-              IconButton(
-                tooltip: 'Workspaces',
-                icon: const Icon(Icons.business_center_outlined),
-                onPressed: controller.busy
-                    ? null
-                    : () => controller.navigate(AppPage.workspaces),
-              ),
-            if (!controller.signedIn && controller.page != AppPage.intro)
-              IconButton(
-                tooltip: 'Introduction',
-                icon: const Icon(Icons.home_outlined),
-                onPressed: controller.busy
-                    ? null
-                    : () => controller.navigate(AppPage.intro),
-              ),
-            IconButton(
-              tooltip: 'Settings',
-              icon: const Icon(Icons.settings_outlined),
-              onPressed: controller.busy
-                  ? null
-                  : () => controller.navigate(AppPage.settings),
-            ),
-            const SizedBox(width: 12),
-          ],
-        ),
-        body: LayoutBuilder(
-          builder: (context, constraints) {
-            final desktop = constraints.maxWidth >= 900 && controller.signedIn;
-            final page = AbsorbPointer(
-              absorbing: controller.busy,
-              child: content,
-            );
-            if (desktop) {
-              return Row(
-                children: [
-                  _DesktopNavRail(controller: controller),
-                  Expanded(child: page),
-                ],
+          body: LayoutBuilder(
+            builder: (context, constraints) {
+              final desktop =
+                  constraints.maxWidth >= 900 && controller.signedIn;
+              final page = AbsorbPointer(
+                absorbing: controller.busy,
+                child: content,
               );
-            }
-            return Stack(
-              children: [
-                Positioned.fill(child: page),
-                if (visibleNavigation)
-                  Positioned(
-                    left: 0,
-                    right: 0,
-                    bottom: 8,
-                    child: SafeArea(
-                      top: false,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Align(
-                          child: ConstrainedBox(
-                            constraints: const BoxConstraints(maxWidth: 440),
-                            child: GlassPanel(
-                              radius: 32,
-                              // Keep this control visibly glassy but never
-                              // transparent over scrolling cards.
-                              fillOpacity: 0.78,
-                              refractionStrength: 1.4,
-                              grouped: false,
-                              child: NavigationBar(
-                                selectedIndex:
-                                    controller.page == AppPage.settings ? 1 : 0,
-                                onDestinationSelected: controller.busy
-                                    ? null
-                                    : (i) => controller.navigate(
-                                        i == 0
-                                            ? AppPage.dashboard
-                                            : AppPage.settings,
-                                      ),
-                                destinations: const [
-                                  NavigationDestination(
-                                    icon: Icon(Icons.grid_view_outlined),
-                                    selectedIcon: Icon(Icons.grid_view),
-                                    label: 'Dashboard',
-                                  ),
-                                  NavigationDestination(
-                                    icon: Icon(Icons.settings_outlined),
-                                    selectedIcon: Icon(Icons.settings),
-                                    label: 'Settings',
-                                  ),
-                                ],
+              if (desktop) {
+                return Row(
+                  children: [
+                    _DesktopNavRail(controller: controller),
+                    Expanded(child: page),
+                  ],
+                );
+              }
+              return Stack(
+                children: [
+                  Positioned.fill(child: page),
+                  if (visibleNavigation)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      bottom: 8,
+                      child: SafeArea(
+                        top: false,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Align(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 440),
+                              child: GlassPanel(
+                                radius: 32,
+                                // Keep this control visibly glassy but never
+                                // transparent over scrolling cards.
+                                fillOpacity: 0.94,
+                                refraction: false,
+                                refractionStrength: 0.8,
+                                grouped: false,
+                                child: NavigationBar(
+                                  selectedIndex:
+                                      controller.page == AppPage.settings
+                                      ? 1
+                                      : 0,
+                                  onDestinationSelected: controller.busy
+                                      ? null
+                                      : (i) => controller.navigate(
+                                          i == 0
+                                              ? AppPage.dashboard
+                                              : AppPage.settings,
+                                        ),
+                                  destinations: const [
+                                    NavigationDestination(
+                                      icon: Icon(Icons.grid_view_outlined),
+                                      selectedIcon: Icon(Icons.grid_view),
+                                      label: 'Dashboard',
+                                    ),
+                                    NavigationDestination(
+                                      icon: Icon(Icons.settings_outlined),
+                                      selectedIcon: Icon(Icons.settings),
+                                      label: 'Settings',
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );

@@ -40,7 +40,11 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       widget.controller.refresh();
       // A session is the safe analysis sandbox. Take the user directly to the
       // tool catalogue so the next step is importing or analysing data.
-      widget.controller.navigate(AppPage.tools);
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          widget.controller.navigate(AppPage.tools);
+        }
+      });
     } on FormatException catch (error) {
       setState(() => _message = error.message);
     }
@@ -63,8 +67,9 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     );
     if (value == null) return false;
     final valid = widget.controller.verifyAccountPassword(value);
-    if (!valid && mounted)
+    if (!valid && mounted) {
       setState(() => _message = 'Incorrect account password.');
+    }
     return valid;
   }
 
