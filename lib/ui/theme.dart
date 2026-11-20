@@ -11,17 +11,17 @@ ThemeData buildTheme(Brightness brightness) {
         primary: dark ? const Color(0xff91bbff) : const Color(0xff215ed4),
         onPrimary: dark ? const Color(0xff04162f) : Colors.white,
         secondary: dark ? const Color(0xff8ae1ef) : const Color(0xff126d83),
-        surface: dark ? const Color(0xff0e1b33) : const Color(0xffe7ebf0),
+        surface: dark ? const Color(0xff0e1b33) : const Color(0xffb8c1cc),
         surfaceContainerLow: dark
             ? const Color(0xff12223e)
-            : const Color(0xffeef1f4),
+            : const Color(0xffc5cdd6),
         surfaceContainerHigh: dark
             ? const Color(0xff1a2d4a)
-            : const Color(0xffdfe4ea),
+            : const Color(0xffb8c2cd),
         surfaceContainerHighest: dark
             ? const Color(0xff223651)
-            : const Color(0xffd5dbe3),
-        onSurface: dark ? const Color(0xfff0f5ff) : const Color(0xff26364d),
+            : const Color(0xffaab5c1),
+        onSurface: dark ? const Color(0xfff0f5ff) : const Color(0xff1e2a3a),
         onSurfaceVariant: dark
             ? const Color(0xffb0c2de)
             : const Color(0xff526680),
@@ -89,7 +89,7 @@ ThemeData buildTheme(Brightness brightness) {
                 statusBarColor: Colors.transparent,
                 systemNavigationBarColor: dark
                     ? const Color(0xff071329)
-                    : const Color(0xffe1e5ea),
+                    : const Color(0xffb3bdc8),
                 systemNavigationBarIconBrightness: dark
                     ? Brightness.light
                     : Brightness.dark,

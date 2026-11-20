@@ -40,7 +40,9 @@ class AppController extends ChangeNotifier {
       'light' => ThemeMode.light,
       'dark' => ThemeMode.dark,
       'system' => ThemeMode.system,
-      _ => ThemeMode.dark,
+      // Follow the device appearance by default; users can still choose a
+      // fixed light or dark theme in Settings.
+      _ => ThemeMode.system,
     };
     page = signedIn ? AppPage.dashboard : AppPage.intro;
   }
@@ -173,7 +175,7 @@ class AppController extends ChangeNotifier {
       paid = false;
       aiEnabled = false;
       store.writeSetting(_passwordKey, '');
-      themeMode = ThemeMode.dark;
+      themeMode = ThemeMode.system;
       page = AppPage.intro;
     } catch (_) {
       storageLocked = true;

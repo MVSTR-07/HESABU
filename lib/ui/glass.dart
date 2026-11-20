@@ -43,8 +43,8 @@ class _GlassPanelState extends State<GlassPanel> {
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final fill =
-        widget.color ?? (dark ? const Color(0xff142846) : Colors.white);
+    final fill = widget.color ??
+        (dark ? const Color(0xff142846) : const Color(0xffb8c2cd));
     // Windows currently exposes backdrop shader coordinates in the full
     // composited layer rather than the panel's local bounds. Using the custom
     // lens there creates stretched text trails, so use a small stable frost
@@ -96,11 +96,11 @@ class _GlassPanelState extends State<GlassPanel> {
               end: Alignment.bottomRight,
               colors: [
                 fill.withValues(
-                  alpha: widget.fillOpacity ?? (dark ? 0.74 : .72),
+                  alpha: widget.fillOpacity ?? (dark ? 0.74 : .78),
                 ),
                 fill.withValues(
                   alpha: widget.fillOpacity == null
-                      ? (dark ? 0.45 : .54)
+                      ? (dark ? 0.45 : .58)
                       : widget.fillOpacity! * .72,
                 ),
               ],
@@ -182,7 +182,7 @@ class _Atmosphere extends CustomPainter {
           end: Alignment.bottomRight,
           colors: dark
               ? const [Color(0xff0a1934), Color(0xff060e20), Color(0xff09162b)]
-              : const [Color(0xffeef5ff), Color(0xffe6edfb), Color(0xfff4f8ff)],
+              : const [Color(0xffaab5c1), Color(0xff9da9b6), Color(0xffb9c2cc)],
         ).createShader(rect),
     );
     void glow(Offset point, double radius, Color color) {
@@ -198,17 +198,17 @@ class _Atmosphere extends CustomPainter {
     glow(
       Offset(size.width * .9, size.height * .12),
       size.width * .55,
-      Color(dark ? 0xff164996 : 0xffc1d8ff).withValues(alpha: dark ? 0.36 : .7),
+      Color(dark ? 0xff164996 : 0xff71879f).withValues(alpha: dark ? 0.36 : .16),
     );
     glow(
       Offset(size.width * .03, size.height * .58),
       size.width * .38,
-      Color(dark ? 0xff137181 : 0xffbce5ef).withValues(alpha: .16),
+      Color(dark ? 0xff137181 : 0xff7f98a8).withValues(alpha: .06),
     );
     glow(
       Offset(size.width * .85, size.height * 1.04),
       size.width * .65,
-      Color(dark ? 0xff343e91 : 0xffd8d5fa).withValues(alpha: .18),
+      Color(dark ? 0xff343e91 : 0xff8e98ad).withValues(alpha: .08),
     );
     _drawAccountingMotifs(canvas, size, dark);
     final paint = Paint()
