@@ -96,11 +96,11 @@ class _GlassPanelState extends State<GlassPanel> {
               end: Alignment.bottomRight,
               colors: [
                 fill.withValues(
-                  alpha: widget.fillOpacity ?? (dark ? 0.74 : .88),
+                  alpha: widget.fillOpacity ?? (dark ? 0.74 : .72),
                 ),
                 fill.withValues(
                   alpha: widget.fillOpacity == null
-                      ? (dark ? 0.45 : .72)
+                      ? (dark ? 0.45 : .54)
                       : widget.fillOpacity! * .72,
                 ),
               ],

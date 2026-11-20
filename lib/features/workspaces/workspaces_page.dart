@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../app_controller.dart';
 import '../../core/workspaces/workspace_models.dart';
@@ -43,12 +44,18 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
   }
 
   Future<bool> _authorizeWorkspaceChange() async {
+    if ((kDebugMode || kProfileMode) && widget.controller.developerPreview) {
+      return true;
+    }
     if (!widget.controller.hasAccountPassword) {
       setState(() => _message = 'Set an account password before editing workspaces.');
       return false;
     }
     final value = await _ask('Confirm workspace change', 'Account password', password: true);
-    return value != null && widget.controller.verifyAccountPassword(value);
+    if (value == null) return false;
+    final valid = widget.controller.verifyAccountPassword(value);
+    if (!valid && mounted) setState(() => _message = 'Incorrect account password.');
+    return valid;
   }
 
   Future<void> _renameWorkspace(BusinessWorkspace workspace) async {

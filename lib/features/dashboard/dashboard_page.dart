@@ -3,63 +3,10 @@ import 'package:flutter/rendering.dart';
 
 import '../../app_controller.dart';
 import '../../ui/shared.dart';
-import '../tools/tool_registry.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({required this.controller, super.key});
   final AppController controller;
-
-  void _open(BuildContext context, ToolDefinition tool) {
-    if (controller.workspaces.activeSession() == null) {
-      showDialog<void>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Create a private session first'),
-          content: const Text(
-            'Tools are available to preview, but imported data and analysis must belong to a workspace session. Create one before opening this tool.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('Not now'),
-            ),
-            FilledButton(
-              onPressed: () {
-                Navigator.pop(context);
-                controller.navigate(AppPage.workspaces);
-              },
-              child: const Text('Create workspace'),
-            ),
-          ],
-        ),
-      );
-      return;
-    }
-    final locked = tool.paid && !controller.paid;
-    if (!locked && tool.page != null) {
-      controller.navigate(tool.page!);
-      return;
-    }
-    showDialog<void>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(locked ? 'Upgrade to HESABU Premium' : tool.title),
-        content: Text(
-          locked
-              ? tool.page != null
-                    ? 'This tool is part of HESABU Premium. Enable the local paid preview in Settings for this demo; no payment is collected.'
-                    : 'This card previews paid access. You can switch to the paid demo in Settings; no payment is collected. The tool itself arrives in Stage ${tool.stage}.'
-              : 'This tool will be built in Stage ${tool.stage}. Financial statement analysis is available from the dashboard; this tool is still a preview.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Got it'),
-          ),
-        ],
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) => ContentWidth(
@@ -91,140 +38,61 @@ class DashboardPage extends StatelessWidget {
           _DashboardAnalytics(controller: controller),
           const SizedBox(height: 28),
         ],
-        Text(
-          'Explore your tools',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Preview every HESABU tool. Create a private session before importing or analysing data.',
-        ),
-        const SizedBox(height: 16),
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final columns = constraints.maxWidth >= 900
-                ? 3
-                : constraints.maxWidth >= 560
-                ? 2
-                : 1;
-            const gap = 16.0;
-            final cardWidth =
-                (constraints.maxWidth - gap * (columns - 1)) / columns;
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: columns,
-                mainAxisSpacing: gap,
-                crossAxisSpacing: gap,
-                mainAxisExtent: constraints.maxWidth < 400 ? 188 : 180,
-              ),
-              itemCount: tools.length,
-              itemBuilder: (context, index) {
-                final tool = tools[index];
-                return SizedBox(
-                  width: cardWidth,
-                  child: GlassPanel(
-                    // Repeated cards keep the glass surface and border, but
-                    // skip a live backdrop pass so scrolling stays smooth on
-                    // integrated GPUs and lower-end Android devices.
-                    refraction: false,
-                    clipBehavior: Clip.antiAlias,
-                    child: InkWell(
-                      onTap: () => _open(context, tool),
-                      child: Padding(
-                        padding: EdgeInsets.all(
-                          constraints.maxWidth < 400 ? 14 : 18,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(10),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(context).colorScheme.primary
-                                        .withValues(alpha: .11),
-                                    borderRadius: BorderRadius.circular(15),
-                                    border: Border.all(
-                                      color: Theme.of(context)
-                                          .colorScheme
-                                          .primary
-                                          .withValues(alpha: .16),
-                                    ),
-                                  ),
-                                  child: Icon(
-                                    tool.icon,
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .primary,
-                                    size: 22,
-                                  ),
-                                ),
-                                const Spacer(),
-                                Icon(
-                                  tool.page != null
-                                      ? Icons.north_east
-                                      : Icons.more_horiz,
-                                  size: 18,
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .onSurfaceVariant
-                                      .withValues(alpha: .65),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              tool.title,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.titleMedium
-                                  ?.copyWith(fontWeight: FontWeight.w700),
-                            ),
-                            const SizedBox(height: 4),
-                            Expanded(
-                              child: Align(
-                                alignment: Alignment.topLeft,
-                                child: Text(
-                                  tool.description,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ),
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 4,
-                              children: [
-                                Text(
-                                  tool.page != null
-                                      ? 'Open tool'
-                                      : 'Coming soon',
-                                ),
-                                if (tool.paid)
-                                  Text(
-                                    controller.paid
-                                        ? 'Paid demo'
-                                        : 'Paid preview',
-                                  ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            );
-          },
-        ),
+        const _OverviewInfo(),
         const SizedBox(height: 24),
       ],
     ),
   );
+}
+
+class _OverviewInfo extends StatelessWidget {
+  const _OverviewInfo();
+
+  @override
+  Widget build(BuildContext context) => GlassPanel(
+    refraction: false,
+    child: Padding(
+      padding: const EdgeInsets.all(22),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Inside HESABU', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 6),
+          const Text('Useful features, private analysis and occasional member rewards—no external ads.'),
+          const SizedBox(height: 18),
+          Wrap(
+        spacing: 28,
+        runSpacing: 18,
+        children: [
+          SizedBox(
+            width: 270,
+            child: _item(context, Icons.lock_outline, 'Private by design', 'Your business data stays encrypted on this device.'),
+          ),
+          SizedBox(
+            width: 270,
+            child: _item(context, Icons.insights_outlined, 'Plain local analysis', 'Clear summaries and trends without sending raw records away.'),
+          ),
+          SizedBox(
+            width: 270,
+            child: _item(context, Icons.card_giftcard_outlined, 'Member rewards', 'Invite another business when a reward event is active and earn credit toward a future subscription or tool.'),
+          ),
+        ],
+          ),
+        ],
+      ),
+    ),
+  );
+
+  static Widget _item(BuildContext context, IconData icon, String title, String body) =>
+      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Icon(icon, color: Theme.of(context).colorScheme.secondary),
+        const SizedBox(width: 10),
+        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 4),
+          Text(body),
+        ])),
+      ]);
 }
 
 class _SessionGate extends StatelessWidget {

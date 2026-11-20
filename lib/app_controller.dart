@@ -58,6 +58,15 @@ class AppController extends ChangeNotifier {
   bool aiEnabled = false;
   bool busy = false;
   bool storageLocked = false;
+  bool developerPreview = false;
+
+  void enterDeveloperPreview() {
+    developerPreview = true;
+    signedIn = true;
+    email = 'developer-preview@local';
+    page = AppPage.dashboard;
+    notifyListeners();
+  }
 
   void navigate(AppPage next) {
     page = next;
@@ -97,6 +106,7 @@ class AppController extends ChangeNotifier {
   void signOut() {
     store.writeSetting('signed_in', 'false');
     signedIn = false;
+    developerPreview = false;
     page = AppPage.intro;
     notifyListeners();
   }
@@ -159,6 +169,7 @@ class AppController extends ChangeNotifier {
       await store.deleteAllData();
       email = null;
       signedIn = false;
+      developerPreview = false;
       paid = false;
       aiEnabled = false;
       store.writeSetting(_passwordKey, '');

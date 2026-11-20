@@ -11,17 +11,17 @@ ThemeData buildTheme(Brightness brightness) {
         primary: dark ? const Color(0xff91bbff) : const Color(0xff215ed4),
         onPrimary: dark ? const Color(0xff04162f) : Colors.white,
         secondary: dark ? const Color(0xff8ae1ef) : const Color(0xff126d83),
-        surface: dark ? const Color(0xff0e1b33) : const Color(0xfff5f8ff),
+        surface: dark ? const Color(0xff0e1b33) : const Color(0xffe7ebf0),
         surfaceContainerLow: dark
             ? const Color(0xff12223e)
-            : const Color(0xffeaf0fc),
+            : const Color(0xffeef1f4),
         surfaceContainerHigh: dark
             ? const Color(0xff1a2d4a)
-            : const Color(0xffe3ebfa),
+            : const Color(0xffdfe4ea),
         surfaceContainerHighest: dark
             ? const Color(0xff223651)
-            : const Color(0xffdae5f8),
-        onSurface: dark ? const Color(0xfff0f5ff) : const Color(0xff142541),
+            : const Color(0xffd5dbe3),
+        onSurface: dark ? const Color(0xfff0f5ff) : const Color(0xff26364d),
         onSurfaceVariant: dark
             ? const Color(0xffb0c2de)
             : const Color(0xff526680),
@@ -89,7 +89,7 @@ ThemeData buildTheme(Brightness brightness) {
                 statusBarColor: Colors.transparent,
                 systemNavigationBarColor: dark
                     ? const Color(0xff071329)
-                    : const Color(0xffedf3ff),
+                    : const Color(0xffe1e5ea),
                 systemNavigationBarIconBrightness: dark
                     ? Brightness.light
                     : Brightness.dark,
@@ -116,7 +116,7 @@ ThemeData buildTheme(Brightness brightness) {
     cardTheme: CardThemeData(
       elevation: 0,
       margin: EdgeInsets.zero,
-      color: scheme.surface.withValues(alpha: dark ? 0.64 : .86),
+      color: scheme.surface.withValues(alpha: dark ? 0.64 : .72),
       surfaceTintColor: Colors.transparent,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(24),

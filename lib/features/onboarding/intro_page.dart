@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 
 import '../../app_controller.dart';
 import '../../ui/shared.dart';
@@ -24,6 +25,12 @@ class IntroPage extends StatelessWidget {
               onPressed: () => controller.navigate(AppPage.settings),
               child: const Text('Settings'),
             ),
+            if (kDebugMode || kProfileMode)
+              TextButton.icon(
+                onPressed: controller.enterDeveloperPreview,
+                icon: const Icon(Icons.developer_mode_outlined),
+                label: const Text('Developer preview · no account'),
+              ),
           ],
         ),
         const SizedBox(height: 24),

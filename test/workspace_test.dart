@@ -79,12 +79,14 @@ void main() {
     }
     await tester.pumpAndSettle();
     expect(controller.store.sampleCount, 12);
-    await tester.scrollUntilVisible(find.text('Customer performance'), 200);
+    controller.navigate(AppPage.tools);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Customer performance').last, 200, scrollable: find.byType(Scrollable).last);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Customer performance'));
     await tester.pumpAndSettle();
     expect(find.text('Upgrade to HESABU Premium'), findsOneWidget);
-    await tester.tap(find.text('Got it'));
+    await tester.tap(find.text('Not now'));
     await tester.pumpAndSettle();
     controller.navigate(AppPage.settings);
     await tester.pumpAndSettle();
@@ -124,7 +126,9 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.text('Export reports'), 250);
+    controller.navigate(AppPage.tools);
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.text('Export reports').last, 250, scrollable: find.byType(Scrollable).last);
     await tester.pumpAndSettle();
     expect(
       tester.getTopLeft(find.text('Customer performance')).dy,

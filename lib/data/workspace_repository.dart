@@ -84,9 +84,10 @@ class WorkspaceRepository {
     if (!all.any((workspace) => workspace.id == id)) {
       throw StateError('That workspace is no longer available.');
     }
+    final wasActive = activeWorkspace()?.id == id;
     _saveWorkspaces(all.where((workspace) => workspace.id != id).toList());
     _saveSessions(_sessions().where((session) => session.workspaceId != id).toList());
-    if (activeWorkspace()?.id == id) {
+    if (wasActive) {
       _store.writeSetting(_activeWorkspaceKey, '');
       _store.writeSetting(_activeSessionKey, '');
     }
