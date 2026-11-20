@@ -17,9 +17,10 @@ an unnecessary listening/service surface.
 - `DisabledAiService` is the shipping default. There is no provider adapter,
   HTTP client, endpoint, API key, analytics upload or background queue.
 
-The Settings preference only enables local UI controls. It is not consent and
-does not make a provider available. Each actual send must show the disclosure
-and require a new approval.
+The gateway is intentionally dormant in this release: there is no visible AI
+control, menu item or consent-preview screen. It is not consent and does not
+make a provider available. A future reviewed entry point must show the
+disclosure and require a new approval for each actual send.
 
 ## Connecting a future provider
 

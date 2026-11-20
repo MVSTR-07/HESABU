@@ -14,6 +14,7 @@ import 'features/finance/profit_page.dart';
 import 'features/debts/debts_page.dart';
 import 'features/imports/imports_page.dart';
 import 'features/reports/reports_page.dart';
+import 'features/workspaces/workspaces_page.dart';
 import 'ui/theme.dart';
 import 'ui/glass.dart';
 
@@ -65,6 +66,7 @@ class _Workspace extends StatelessWidget {
       AppPage.debts => DebtsPage(controller: controller),
       AppPage.imports => ImportsPage(controller: controller),
       AppPage.reports => ReportsPage(controller: controller),
+      AppPage.workspaces => WorkspacesPage(controller: controller),
     };
     final floatingNavigation = controller.signedIn;
     final visibleNavigation =
@@ -106,6 +108,14 @@ class _Workspace extends StatelessWidget {
                 onPressed: controller.busy
                     ? null
                     : () => controller.navigate(AppPage.dashboard),
+              ),
+            if (controller.signedIn)
+              IconButton(
+                tooltip: 'Workspaces',
+                icon: const Icon(Icons.business_center_outlined),
+                onPressed: controller.busy
+                    ? null
+                    : () => controller.navigate(AppPage.workspaces),
               ),
             if (!controller.signedIn && controller.page != AppPage.intro)
               IconButton(
@@ -197,5 +207,6 @@ bool _isToolPage(AppPage page) => switch (page) {
   AppPage.intro ||
   AppPage.account ||
   AppPage.dashboard ||
+  AppPage.workspaces ||
   AppPage.settings => false,
 };

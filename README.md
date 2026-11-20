@@ -27,6 +27,8 @@ published product.
   as a practical working view, not a replacement for formal accounts.
 - **Light and dark appearance:** the shared interface uses a dark-blue glass
   style, with a light option.
+- **Workspaces and sessions:** create private local contexts for a business,
+  client or project, then organise analysis jobs before exporting results.
 
 Analysis runs locally. Imported records and results are kept in an encrypted
 SQLite database on the device; they are not sent to a HESABU server. The account

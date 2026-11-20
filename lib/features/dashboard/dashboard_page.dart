@@ -222,6 +222,12 @@ class _DashboardSummary extends StatelessWidget {
               const SizedBox(height: 16),
               const PrivacyNote(),
               const SizedBox(height: 18),
+              if (controller.workspaces.activeWorkspace() != null) ...[
+                Text(
+                  'Active workspace: ${controller.workspaces.activeWorkspace()!.name}',
+                ),
+                const SizedBox(height: 10),
+              ],
               Wrap(
                 spacing: 24,
                 runSpacing: 14,
@@ -247,6 +253,15 @@ class _DashboardSummary extends StatelessWidget {
                     onPressed: controller.seedSamples,
                     icon: const Icon(Icons.science_outlined, size: 18),
                     label: const Text('Load sample data'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: () => controller.navigate(AppPage.workspaces),
+                    icon: const Icon(Icons.business_center_outlined, size: 18),
+                    label: Text(
+                      controller.workspaces.activeWorkspace() == null
+                          ? 'Create workspace'
+                          : 'Switch workspace',
+                    ),
                   ),
                   Chip(
                     label: Text(

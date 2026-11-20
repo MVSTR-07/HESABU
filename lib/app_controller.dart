@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'data/local_store.dart';
+import 'data/workspace_repository.dart';
 
 enum AppPage {
   intro,
@@ -16,6 +17,7 @@ enum AppPage {
   debts,
   imports,
   reports,
+  workspaces,
 }
 
 /// Local-only demo identity and entitlement. No server, payment or password
@@ -27,6 +29,7 @@ enum AppPage {
 // production. This local switch is not billing or access security.
 class AppController extends ChangeNotifier {
   AppController(this.store) {
+    workspaces = WorkspaceRepository(store);
     email = store.readSetting('account_email');
     signedIn = store.readSetting('signed_in') == 'true' && email != null;
     paid = store.readSetting('demo_paid') == 'true';
@@ -40,6 +43,7 @@ class AppController extends ChangeNotifier {
     page = signedIn ? AppPage.dashboard : AppPage.intro;
   }
   final LocalStore store;
+  late final WorkspaceRepository workspaces;
   late AppPage page;
   late ThemeMode themeMode;
   String? email;
@@ -55,6 +59,9 @@ class AppController extends ChangeNotifier {
     page = next;
     notifyListeners();
   }
+
+  /// Rebuilds UI after a repository operation that already persisted locally.
+  void refresh() => notifyListeners();
 
   /// Locks navigation during import, including the password prompt, so cleanup
   /// cannot race an unfinished import and allow it to save data after a wipe.

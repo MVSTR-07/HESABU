@@ -337,6 +337,9 @@ class HesabuBrand extends StatelessWidget {
       const SizedBox(width: 12),
       Text(
         'HESABU',
+        // The wordmark is a logo, not body copy. Keeping it fixed prevents the
+        // app bar from crowding out navigation at large accessibility scales.
+        textScaler: TextScaler.noScaling,
         style: TextStyle(
           fontSize: compact ? 17 : 20,
           fontWeight: FontWeight.w700,

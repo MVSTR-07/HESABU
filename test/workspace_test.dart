@@ -120,7 +120,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(
       tester.getTopLeft(find.text('Customer performance')).dy,
-      greaterThan(tester.getTopLeft(find.text('M-Pesa statements')).dy),
+      greaterThan(tester.getTopLeft(find.text('Financial statements')).dy),
     );
     expect(find.text('Expense analyser'), findsOneWidget);
   });
