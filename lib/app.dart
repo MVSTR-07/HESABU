@@ -15,6 +15,7 @@ import 'features/debts/debts_page.dart';
 import 'features/imports/imports_page.dart';
 import 'features/reports/reports_page.dart';
 import 'features/workspaces/workspaces_page.dart';
+import 'features/tools/tools_page.dart';
 import 'ui/theme.dart';
 import 'ui/glass.dart';
 
@@ -56,6 +57,7 @@ class _Workspace extends StatelessWidget {
       AppPage.intro => IntroPage(controller: controller),
       AppPage.account => AccountPage(controller: controller),
       AppPage.dashboard => DashboardPage(controller: controller),
+      AppPage.tools => ToolsPage(controller: controller),
       AppPage.settings => SettingsPage(controller: controller),
       AppPage.mpesa => MpesaPage(controller: controller),
       AppPage.customers => CustomersPage(controller: controller),
@@ -230,6 +232,7 @@ class _DesktopNavRail extends StatelessWidget {
               const SizedBox(height: 28),
               _nav(context, 'Overview', Icons.dashboard_outlined,
                   AppPage.dashboard),
+              _nav(context, 'Tools', Icons.widgets_outlined, AppPage.tools),
               _nav(context, 'Workspaces', Icons.business_center_outlined,
                   AppPage.workspaces),
               _nav(context, 'Reports', Icons.insert_chart_outlined,
@@ -295,6 +298,7 @@ bool _isToolPage(AppPage page) => switch (page) {
   AppPage.intro ||
   AppPage.account ||
   AppPage.dashboard ||
+  AppPage.tools ||
   AppPage.workspaces ||
   AppPage.settings => false,
 };

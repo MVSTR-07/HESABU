@@ -7,6 +7,7 @@ enum AppPage {
   intro,
   account,
   dashboard,
+  tools,
   settings,
   mpesa,
   customers,

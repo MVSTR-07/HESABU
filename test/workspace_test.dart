@@ -82,7 +82,7 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Customer performance'));
     await tester.pumpAndSettle();
-    expect(find.text('Paid tool · demo gate'), findsOneWidget);
+    expect(find.text('Upgrade to HESABU Premium'), findsOneWidget);
     await tester.tap(find.text('Got it'));
     await tester.pumpAndSettle();
     controller.navigate(AppPage.settings);

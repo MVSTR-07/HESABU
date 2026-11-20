@@ -9,6 +9,31 @@ class DashboardPage extends StatelessWidget {
   final AppController controller;
 
   void _open(BuildContext context, ToolDefinition tool) {
+    if (controller.workspaces.activeSession() == null) {
+      showDialog<void>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Create a private session first'),
+          content: const Text(
+            'Tools are available to preview, but imported data and analysis must belong to a workspace session. Create one before opening this tool.',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Not now'),
+            ),
+            FilledButton(
+              onPressed: () {
+                Navigator.pop(context);
+                controller.navigate(AppPage.workspaces);
+              },
+              child: const Text('Create workspace'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
     final locked = tool.paid && !controller.paid;
     if (!locked && tool.page != null) {
       controller.navigate(tool.page!);
@@ -17,11 +42,11 @@ class DashboardPage extends StatelessWidget {
     showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(locked ? 'Paid tool · demo gate' : tool.title),
+        title: Text(locked ? 'Upgrade to HESABU Premium' : tool.title),
         content: Text(
           locked
               ? tool.page != null
-                    ? 'This tool is available in the paid demo. Enable Preview paid plan in Settings; no payment is collected.'
+                    ? 'This tool is part of HESABU Premium. Enable the local paid preview in Settings for this demo; no payment is collected.'
                     : 'This card previews paid access. You can switch to the paid demo in Settings; no payment is collected. The tool itself arrives in Stage ${tool.stage}.'
               : 'This tool will be built in Stage ${tool.stage}. Financial statement analysis is available from the dashboard; this tool is still a preview.',
         ),
@@ -55,22 +80,25 @@ class DashboardPage extends StatelessWidget {
         const SizedBox(height: 24),
         _DashboardSummary(controller: controller),
         const SizedBox(height: 28),
-        if (controller.workspaces.activeSession() == null)
-          _SessionGate(controller: controller)
-        else ...[
+        if (controller.workspaces.activeSession() == null) ...[
+          _SessionGate(controller: controller),
+          const SizedBox(height: 28),
+        ],
+        if (controller.workspaces.activeSession() != null) ...[
           _DashboardAnalytics(controller: controller),
           const SizedBox(height: 28),
-          Text(
-            'Explore your tools',
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          const Text(
-            'Tools are available inside the active private analysis session.',
-          ),
-          const SizedBox(height: 16),
-          LayoutBuilder(
-            builder: (context, constraints) {
+        ],
+        Text(
+          'Explore your tools',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Preview every HESABU tool. Create a private session before importing or analysing data.',
+        ),
+        const SizedBox(height: 16),
+        LayoutBuilder(
+          builder: (context, constraints) {
             final columns = constraints.maxWidth >= 900
                 ? 3
                 : constraints.maxWidth >= 560
@@ -184,9 +212,8 @@ class DashboardPage extends StatelessWidget {
                 );
               },
             );
-            },
-          ),
-        ],
+          },
+        ),
         const SizedBox(height: 24),
       ],
     ),
