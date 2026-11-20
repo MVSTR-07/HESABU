@@ -51,6 +51,7 @@ class AppController extends ChangeNotifier {
   static const _accountSecurity = AccountSecurity();
   late final WorkspaceRepository workspaces;
   late AppPage page;
+  final List<AppPage> _history = [];
   late ThemeMode themeMode;
   String? email;
   bool signedIn = false;
@@ -67,12 +68,26 @@ class AppController extends ChangeNotifier {
     signedIn = true;
     email = 'developer-preview@local';
     page = AppPage.dashboard;
+    _history.clear();
     notifyListeners();
   }
 
   void navigate(AppPage next) {
+    if (page == next) return;
+    _history.add(page);
     page = next;
     notifyListeners();
+  }
+
+  bool get canGoBack => _history.isNotEmpty;
+
+  /// Pops exactly one in-app page. The Android Home and Recents controls are
+  /// handled by the operating system and never call this method.
+  bool goBack() {
+    if (_history.isEmpty) return false;
+    page = _history.removeLast();
+    notifyListeners();
+    return true;
   }
 
   /// Rebuilds UI after a repository operation that already persisted locally.
@@ -101,6 +116,7 @@ class AppController extends ChangeNotifier {
     store.writeSetting('signed_in', 'true');
     signedIn = true;
     page = AppPage.dashboard;
+    _history.clear();
     notifyListeners();
     return null;
   }
@@ -110,6 +126,7 @@ class AppController extends ChangeNotifier {
     signedIn = false;
     developerPreview = false;
     page = AppPage.intro;
+    _history.clear();
     notifyListeners();
   }
 
@@ -125,11 +142,15 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool get hasAccountPassword => (store.readSetting(_passwordKey) ?? '').isNotEmpty;
+  bool get hasAccountPassword =>
+      (store.readSetting(_passwordKey) ?? '').isNotEmpty;
 
   String? setAccountPassword(String password) {
     try {
-      store.writeSetting(_passwordKey, _accountSecurity.createVerifier(password));
+      store.writeSetting(
+        _passwordKey,
+        _accountSecurity.createVerifier(password),
+      );
       notifyListeners();
       return null;
     } on FormatException catch (error) {
@@ -177,6 +198,7 @@ class AppController extends ChangeNotifier {
       store.writeSetting(_passwordKey, '');
       themeMode = ThemeMode.system;
       page = AppPage.intro;
+      _history.clear();
     } catch (_) {
       storageLocked = true;
       rethrow;

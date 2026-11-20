@@ -29,10 +29,10 @@ void main() {
       await tester.pumpWidget(HesabuApp(controller: controller));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull, reason: '$page initial layout');
-      expect(find.byTooltip('Back to tools'), findsOneWidget);
-      await tester.tap(find.byTooltip('Back to tools'));
+      expect(find.byTooltip('Back'), findsOneWidget);
+      await tester.tap(find.byTooltip('Back'));
       await tester.pumpAndSettle();
-      expect(controller.page, AppPage.tools);
+      expect(controller.page, AppPage.dashboard);
     }
   });
 
