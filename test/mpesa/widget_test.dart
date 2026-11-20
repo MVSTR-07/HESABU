@@ -8,6 +8,7 @@ import 'package:hesabu/data/local_statement_picker.dart';
 import 'package:hesabu/data/mpesa_import_service.dart';
 import 'package:hesabu/data/mpesa_pdf_reader.dart';
 import 'package:hesabu/features/mpesa/mpesa_page.dart';
+import 'package:hesabu/ui/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -96,6 +97,7 @@ void main() {
       final controller = AppController(store);
       await tester.pumpWidget(
         MaterialApp(
+          theme: buildTheme(Brightness.light),
           home: Scaffold(
             body: MpesaPage(
               controller: controller,
@@ -136,6 +138,7 @@ void main() {
     final controller = AppController(MemoryStore());
     await tester.pumpWidget(
       MaterialApp(
+        theme: buildTheme(Brightness.light),
         home: Scaffold(
           body: MpesaPage(
             controller: controller,

@@ -32,8 +32,17 @@ void main() {
 
   test('AI is unavailable and cannot send a request', () async {
     const ai = DisabledAiService();
+    final request = AiRequest(
+      providerName: 'test provider',
+      purpose: 'test',
+      approvedSummary: 'fabricated',
+      sentFields: const ['fabricated summary'],
+    );
     expect(ai.isAvailable, isFalse);
-    await expectLater(ai.explain('fabricated'), throwsStateError);
+    await expectLater(
+      ai.explain(request, consent: AiConsent.approve(request)),
+      throwsStateError,
+    );
   });
 
   test('fabricated fixtures and Kenyan formatting are deterministic', () {

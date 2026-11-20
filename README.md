@@ -30,7 +30,10 @@ Analysis runs locally. Imported records and results are kept in an encrypted
 SQLite database on the device; they are not sent to a HESABU server. The account
 and paid-plan screens are clearly labelled demos: there is no real sign-in,
 billing or account server yet. The optional AI area is disabled and no AI service
-is connected.
+is connected. The Stage 6 groundwork includes a provider-free, consent-gated
+gateway: the optional controls are off by default, no network client or API key
+is bundled, and a future provider can only receive the exact data a user has
+just reviewed and approved.
 
 I have kept the production security boundaries separate from the demo flow:
 authentication and subscription providers are interfaces, passwords are never
@@ -69,7 +72,8 @@ import are left where they are.
 - `lib/data/` — encrypted local storage and repositories.
 - `lib/features/` — screens for each tool and shared navigation.
 - `lib/ui/` — reusable widgets, theme and formatting.
-- `lib/ai/` — disabled interface kept separate so it can be removed cleanly.
+- `lib/ai/` — consent-gated, provider-free interface kept separate so it can
+  be removed cleanly or connected to a future approved provider.
 - `test/` and `integration_test/` — fabricated-data and local-storage checks.
 - `docs/` — architecture notes, validation and manual checklists.
 

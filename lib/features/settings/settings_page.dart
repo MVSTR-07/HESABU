@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../ai/ai_consent_dialog.dart';
+import '../../ai/ai_service.dart';
 import '../../app_controller.dart';
 import '../../ui/shared.dart';
 import '../customers/customer_settings.dart';
@@ -7,6 +9,20 @@ import '../customers/customer_settings.dart';
 class SettingsPage extends StatelessWidget {
   const SettingsPage({required this.controller, super.key});
   final AppController controller;
+
+  Future<void> _previewAiConsent(BuildContext context) async {
+    final request = AiRequest(
+      providerName: 'a future AI provider',
+      purpose: 'a requested plain-language explanation',
+      sentFields: const ['The exact fabricated preview summary shown below'],
+      approvedSummary: 'Fabricated preview only. No account, statement, customer, transaction or result is being sent.',
+    );
+    await showDialog<AiConsent>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => AiConsentDialog(request: request),
+    );
+  }
 
   Future<void> _clearCache(BuildContext context) async {
     final confirmed = await showDialog<bool>(
@@ -177,18 +193,36 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
-        const GlassPanel(
+        GlassPanel(
           child: Padding(
-            padding: EdgeInsets.all(24),
+            padding: const EdgeInsets.all(24),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                PrivacyNote(),
-                SizedBox(height: 16),
-                Text('AI add-on: off · Not installed'),
-                SizedBox(height: 8),
+                const PrivacyNote(),
+                const SizedBox(height: 16),
                 Text(
-                  'Base analysis uses local code. An optional paid AI add-on is reserved for Stage 6 and will require consent showing exactly what would be sent.',
+                  controller.aiEnabled
+                      ? 'Optional AI controls: enabled locally'
+                      : 'Optional AI controls: off',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'No AI provider, API key, endpoint or network client is installed. Turning this on only reveals future controls; it cannot send business data.',
+                ),
+                SwitchListTile(
+                  contentPadding: EdgeInsets.zero,
+                  title: const Text('Enable optional AI controls'),
+                  subtitle: const Text(
+                    'A fresh consent screen will still be required for every exact payload.',
+                  ),
+                  value: controller.aiEnabled,
+                  onChanged: controller.busy ? null : controller.setAiEnabled,
+                ),
+                OutlinedButton(
+                  onPressed: () => _previewAiConsent(context),
+                  child: const Text('Preview consent screen'),
                 ),
               ],
             ),

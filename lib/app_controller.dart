@@ -30,6 +30,7 @@ class AppController extends ChangeNotifier {
     email = store.readSetting('account_email');
     signedIn = store.readSetting('signed_in') == 'true' && email != null;
     paid = store.readSetting('demo_paid') == 'true';
+    aiEnabled = store.readSetting('ai_enabled') == 'true';
     themeMode = switch (store.readSetting('theme')) {
       'light' => ThemeMode.light,
       'dark' => ThemeMode.dark,
@@ -44,6 +45,9 @@ class AppController extends ChangeNotifier {
   String? email;
   bool signedIn = false;
   bool paid = false;
+
+  /// A local preference only. It never configures a provider or permits sending.
+  bool aiEnabled = false;
   bool busy = false;
   bool storageLocked = false;
 
@@ -98,6 +102,12 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setAiEnabled(bool value) {
+    store.writeSetting('ai_enabled', value.toString());
+    aiEnabled = value;
+    notifyListeners();
+  }
+
   void seedSamples() {
     store.seedSamples();
     notifyListeners();
@@ -122,6 +132,7 @@ class AppController extends ChangeNotifier {
       email = null;
       signedIn = false;
       paid = false;
+      aiEnabled = false;
       themeMode = ThemeMode.dark;
       page = AppPage.intro;
     } catch (_) {

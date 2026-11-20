@@ -34,6 +34,9 @@ ThemeData buildTheme(Brightness brightness) {
     useMaterial3: true,
     colorScheme: scheme,
     brightness: brightness,
+    // Preserve smooth input on lower-end Android devices and avoid relying on
+    // Material's extra InkSparkle shader. This is separate from glass shader.
+    splashFactory: InkRipple.splashFactory,
   );
   final text = base.textTheme
       .apply(bodyColor: scheme.onSurface, displayColor: scheme.onSurface)

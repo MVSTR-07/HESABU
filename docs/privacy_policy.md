@@ -20,5 +20,9 @@ by the account service as well as the local encrypted workspace. Original files
 selected for import remain wherever the user chose to keep them unless the user
 deletes those files separately.
 
-The optional AI add-on is disabled. No business data is sent to an AI provider
-without an explicit consent dialog describing exactly what would be sent.
+The optional AI controls are off by default. This build has no AI provider,
+endpoint, API key or network client. If I connect an AI provider in a later
+release, HESABU will show the purpose, provider and exact minimised payload
+before every request. A fresh approval is bound to that exact payload; changing
+the summary, purpose, provider or listed fields requires fresh consent. The
+base product remains fully usable without AI.
