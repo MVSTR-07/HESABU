@@ -69,7 +69,10 @@ class _GlassPanelState extends State<GlassPanel> {
               : 1.0;
           shader.setFloat(0, width);
           shader.setFloat(1, height);
-          shader.setFloat(2, widget.refractionStrength.clamp(0.0, 1.0));
+          // Keep the optical offset below a few physical pixels even when a
+          // caller uses a stronger legacy value. Large offsets create ghosted
+          // text at panel edges instead of a glass highlight.
+          shader.setFloat(2, widget.refractionStrength.clamp(0.0, 0.24));
           // Keep refraction to one texture lookup and one GPU pass. Bilinear
           // sampling provides slight softness without a second blur pass.
           filter = ui.ImageFilter.shader(shader);

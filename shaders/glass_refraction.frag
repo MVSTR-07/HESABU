@@ -18,16 +18,16 @@ void main() {
   float edge = smoothstep(0.12, 0.48, radial);
   // Keep the lens close to its source pixel. Large offsets turn nearby text
   // into visible ghost trails instead of a subtle glass highlight.
-  float ripple = sin(uv.y * 18.0) * cos(uv.x * 14.0) * 0.003;
-  vec2 lens = centered * (radial * 0.08 + 0.004) + vec2(ripple, -ripple);
-  vec2 sample_uv = clamp(uv + lens * u_strength * (0.24 + edge * 0.16), vec2(0.0), vec2(1.0));
+  float ripple = sin(uv.y * 18.0) * cos(uv.x * 14.0) * 0.0012;
+  vec2 lens = centered * (radial * 0.025 + 0.0015) + vec2(ripple, -ripple);
+  vec2 sample_uv = clamp(uv + lens * u_strength * (0.16 + edge * 0.10), vec2(0.0), vec2(1.0));
 
   // Keep the centre readable and add only a small edge frost. Three taps are
   // enough to soften the curved rim without creating a second backdrop pass.
   vec4 centre = texture(u_backdrop, sample_uv);
   vec2 texel = 1.0 / u_size;
-  float blur = edge * 1.35;
+  float blur = edge * 0.75;
   vec4 side_a = texture(u_backdrop, clamp(sample_uv + vec2(texel.x * blur, 0.0), vec2(0.0), vec2(1.0)));
   vec4 side_b = texture(u_backdrop, clamp(sample_uv - vec2(texel.x * blur, 0.0), vec2(0.0), vec2(1.0)));
-  frag_color = mix(centre, (centre * 0.52 + side_a * 0.24 + side_b * 0.24), edge * 0.62);
+  frag_color = mix(centre, (centre * 0.64 + side_a * 0.18 + side_b * 0.18), edge * 0.48);
 }
