@@ -51,13 +51,25 @@ class _GlassPanelState extends State<GlassPanel> {
             'shaders/glass_refraction.frag',
           )
         : null;
-    return FutureBuilder<ui.FragmentProgram>(
-      future: programFuture,
-      builder: (context, snapshot) {
+    return LayoutBuilder(
+      builder: (context, bounds) => FutureBuilder<ui.FragmentProgram>(
+        future: programFuture,
+        builder: (context, snapshot) {
         ui.ImageFilter? filter;
         if (snapshot.hasData && ui.ImageFilter.isShaderFilterSupported) {
           final shader = _shader ??= snapshot.data!.fragmentShader();
-          shader.setFloat(2, widget.refractionStrength);
+          // The shader works in local panel coordinates. Supplying the actual
+          // panel size is essential: without it, the default zero size causes
+          // invalid UVs and stretched pixels across the backdrop.
+          final width = bounds.maxWidth.isFinite && bounds.maxWidth > 0
+              ? bounds.maxWidth
+              : 1.0;
+          final height = bounds.maxHeight.isFinite && bounds.maxHeight > 0
+              ? bounds.maxHeight
+              : 1.0;
+          shader.setFloat(0, width);
+          shader.setFloat(1, height);
+          shader.setFloat(2, widget.refractionStrength.clamp(0.0, 1.0));
           // Keep refraction to one texture lookup and one GPU pass. Bilinear
           // sampling provides slight softness without a second blur pass.
           filter = ui.ImageFilter.shader(shader);
@@ -119,7 +131,8 @@ class _GlassPanelState extends State<GlassPanel> {
             child: backdropFilter,
           ),
         );
-      },
+        },
+      ),
     );
   }
 }
