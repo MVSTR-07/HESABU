@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../../app_controller.dart';
 import '../../ui/shared.dart';
@@ -59,6 +60,8 @@ class ToolsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ContentWidth(
     child: ListView(
+      scrollCacheExtent: const ScrollCacheExtent.pixels(560),
+      physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.fromLTRB(24, 24, 24, MediaQuery.paddingOf(context).bottom + 120),
       children: [
         Text('Tools', style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.w700)),
@@ -82,6 +85,7 @@ class ToolsPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final tool = tools[index];
                 return GlassPanel(
+                  refraction: false,
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
                     onTap: () => _open(context, tool),

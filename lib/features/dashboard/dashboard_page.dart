@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 import '../../app_controller.dart';
 import '../../ui/shared.dart';
@@ -63,6 +64,8 @@ class DashboardPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) => ContentWidth(
     child: ListView(
+      scrollCacheExtent: const ScrollCacheExtent.pixels(560),
+      physics: const ClampingScrollPhysics(),
       padding: EdgeInsets.fromLTRB(
         24,
         24,
@@ -122,6 +125,10 @@ class DashboardPage extends StatelessWidget {
                 return SizedBox(
                   width: cardWidth,
                   child: GlassPanel(
+                    // Repeated cards keep the glass surface and border, but
+                    // skip a live backdrop pass so scrolling stays smooth on
+                    // integrated GPUs and lower-end Android devices.
+                    refraction: false,
                     clipBehavior: Clip.antiAlias,
                     child: InkWell(
                       onTap: () => _open(context, tool),
@@ -374,7 +381,15 @@ class _ChartPanel extends StatelessWidget {
         children: [
           Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
           const SizedBox(height: 14),
-          SizedBox(height: 108, width: double.infinity, child: CustomPaint(painter: _ChartPainter(kind, Theme.of(context).colorScheme))),
+          RepaintBoundary(
+            child: SizedBox(
+              height: 108,
+              width: double.infinity,
+              child: CustomPaint(
+                painter: _ChartPainter(kind, Theme.of(context).colorScheme),
+              ),
+            ),
+          ),
           const SizedBox(height: 5),
           Text(kind == _ChartKind.donut ? 'Money in   Money out' : 'Income   Expenses', style: Theme.of(context).textTheme.bodySmall),
         ],
