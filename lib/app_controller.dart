@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'data/local_store.dart';
 import 'data/workspace_repository.dart';
+import 'data/account_security.dart';
 
 enum AppPage {
   intro,
@@ -44,6 +45,8 @@ class AppController extends ChangeNotifier {
     page = signedIn ? AppPage.dashboard : AppPage.intro;
   }
   final LocalStore store;
+  static const _passwordKey = 'account_password_verifier_v1';
+  static const _accountSecurity = AccountSecurity();
   late final WorkspaceRepository workspaces;
   late AppPage page;
   late ThemeMode themeMode;
@@ -110,6 +113,23 @@ class AppController extends ChangeNotifier {
     notifyListeners();
   }
 
+  bool get hasAccountPassword => (store.readSetting(_passwordKey) ?? '').isNotEmpty;
+
+  String? setAccountPassword(String password) {
+    try {
+      store.writeSetting(_passwordKey, _accountSecurity.createVerifier(password));
+      notifyListeners();
+      return null;
+    } on FormatException catch (error) {
+      return error.message;
+    }
+  }
+
+  bool verifyAccountPassword(String password) {
+    final verifier = store.readSetting(_passwordKey);
+    return verifier != null && _accountSecurity.verify(verifier, password);
+  }
+
   void setAiEnabled(bool value) {
     store.writeSetting('ai_enabled', value.toString());
     aiEnabled = value;
@@ -141,6 +161,7 @@ class AppController extends ChangeNotifier {
       signedIn = false;
       paid = false;
       aiEnabled = false;
+      store.writeSetting(_passwordKey, '');
       themeMode = ThemeMode.dark;
       page = AppPage.intro;
     } catch (_) {

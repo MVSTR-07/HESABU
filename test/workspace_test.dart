@@ -60,7 +60,8 @@ void main() {
     await tester.ensureVisible(find.text('Get started'));
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'shop@example.test');
+    await tester.enterText(find.byType(TextField).first, 'shop@example.test');
+    await tester.enterText(find.byType(TextField).at(1), 'demo-pass-123');
     await tester.ensureVisible(find.text('Create demo profile'));
     await tester.tap(find.text('Create demo profile'));
     await tester.pumpAndSettle();

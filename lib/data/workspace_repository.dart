@@ -69,6 +69,29 @@ class WorkspaceRepository {
     _store.writeSetting(_activeSessionKey, '');
   }
 
+  void renameWorkspace(String id, String value) {
+    final name = _validateName(value, label: 'Workspace name');
+    final all = workspaces();
+    final index = all.indexWhere((workspace) => workspace.id == id);
+    if (index < 0) throw StateError('That workspace is no longer available.');
+    final old = all[index];
+    all[index] = BusinessWorkspace(id: old.id, name: name, createdAt: old.createdAt);
+    _saveWorkspaces(all);
+  }
+
+  void deleteWorkspace(String id) {
+    final all = workspaces();
+    if (!all.any((workspace) => workspace.id == id)) {
+      throw StateError('That workspace is no longer available.');
+    }
+    _saveWorkspaces(all.where((workspace) => workspace.id != id).toList());
+    _saveSessions(_sessions().where((session) => session.workspaceId != id).toList());
+    if (activeWorkspace()?.id == id) {
+      _store.writeSetting(_activeWorkspaceKey, '');
+      _store.writeSetting(_activeSessionKey, '');
+    }
+  }
+
   AnalysisSession createSession(String workspaceId, String value) {
     if (!workspaces().any((workspace) => workspace.id == workspaceId)) {
       throw StateError('Select a workspace before creating a session.');

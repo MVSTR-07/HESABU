@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../app_controller.dart';
 import '../../ui/shared.dart';
 
-// TODO(real-auth): Keep the visible DEMO warning until genuine verified sign-in
-// is connected. No password input, password storage, or password logging here.
+// This is still local demo identity; the password protects workspace
+// administration on this device and is never uploaded or stored as plaintext.
 class AccountPage extends StatefulWidget {
   const AccountPage({required this.controller, super.key});
   final AppController controller;
@@ -14,18 +14,35 @@ class AccountPage extends StatefulWidget {
 
 class _AccountPageState extends State<AccountPage> {
   final _email = TextEditingController();
+  final _password = TextEditingController();
   bool _create = true;
   String? _error;
   @override
   void dispose() {
     _email.dispose();
+    _password.dispose();
     super.dispose();
   }
 
   void _submit() {
-    setState(() {
-      _error = widget.controller.enterDemo(_email.text, create: _create);
-    });
+    if (_create && _password.text.length < 8) {
+      setState(() => _error = 'Password must be at least 8 characters.');
+      return;
+    }
+    final accountError = widget.controller.enterDemo(_email.text, create: _create);
+    if (accountError != null) {
+      setState(() => _error = accountError);
+      return;
+    }
+    if (_create) {
+      final passwordError = widget.controller.setAccountPassword(_password.text);
+      if (passwordError != null) {
+        setState(() => _error = passwordError);
+      }
+    } else if (widget.controller.hasAccountPassword &&
+        !widget.controller.verifyAccountPassword(_password.text)) {
+      setState(() => _error = 'Incorrect password.');
+    }
   }
 
   @override
@@ -51,7 +68,7 @@ class _AccountPageState extends State<AccountPage> {
                 ),
                 const SizedBox(height: 16),
                 const Text(
-                  'LOCAL DEMO ONLY\nThis email is saved in your encrypted database. No email is sent, no password is collected, and this is not secure account authentication.',
+                  'LOCAL DEMO ONLY\nYour email and a salted password verifier stay on this device. No password is uploaded or stored as plaintext.',
                 ),
                 const SizedBox(height: 24),
                 SegmentedButton<bool>(
@@ -73,6 +90,17 @@ class _AccountPageState extends State<AccountPage> {
                   decoration: InputDecoration(
                     labelText: 'Email address',
                     errorText: _error,
+                  ),
+                  onSubmitted: (_) => _submit(),
+                ),
+                const SizedBox(height: 16),
+                TextField(
+                  controller: _password,
+                  obscureText: true,
+                  autocorrect: false,
+                  decoration: InputDecoration(
+                    labelText: _create ? 'Create password' : 'Password',
+                    helperText: _create ? 'At least 8 characters' : null,
                   ),
                   onSubmitted: (_) => _submit(),
                 ),

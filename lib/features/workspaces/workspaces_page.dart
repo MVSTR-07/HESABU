@@ -42,7 +42,48 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     }
   }
 
-  Future<String?> _ask(String title, String label) async {
+  Future<bool> _authorizeWorkspaceChange() async {
+    if (!widget.controller.hasAccountPassword) {
+      setState(() => _message = 'Set an account password before editing workspaces.');
+      return false;
+    }
+    final value = await _ask('Confirm workspace change', 'Account password', password: true);
+    return value != null && widget.controller.verifyAccountPassword(value);
+  }
+
+  Future<void> _renameWorkspace(BusinessWorkspace workspace) async {
+    if (!await _authorizeWorkspaceChange() || !mounted) return;
+    final value = await _ask('Rename workspace', 'New workspace name');
+    if (value == null || !mounted) return;
+    try {
+      _repository.renameWorkspace(workspace.id, value);
+      setState(() => _message = 'Workspace renamed locally.');
+      widget.controller.refresh();
+    } on FormatException catch (error) {
+      setState(() => _message = error.message);
+    }
+  }
+
+  Future<void> _deleteWorkspace(BusinessWorkspace workspace) async {
+    if (!await _authorizeWorkspaceChange() || !mounted) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Delete ${workspace.name}?'),
+        content: const Text('This removes the workspace and its session metadata. Imported business records remain in the encrypted store until you clear them explicitly.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete workspace')),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    _repository.deleteWorkspace(workspace.id);
+    setState(() => _message = 'Workspace deleted locally.');
+    widget.controller.refresh();
+  }
+
+  Future<String?> _ask(String title, String label, {bool password = false}) async {
     var value = '';
     return showDialog<String>(
       context: context,
@@ -50,7 +91,8 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
         title: Text(title),
         content: TextField(
           autofocus: true,
-          maxLength: 80,
+          maxLength: password ? 128 : 80,
+          obscureText: password,
           textInputAction: TextInputAction.done,
           decoration: InputDecoration(labelText: label),
           onChanged: (next) => value = next,
@@ -129,7 +171,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
           else
             ...all.map(
               (workspace) =>
-                  _workspaceCard(workspace, active?.id == workspace.id),
+              _workspaceCard(workspace, active?.id == workspace.id),
             ),
           const SizedBox(height: 24),
           const PrivacyNote(),
@@ -143,7 +185,9 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     final sessions = _repository.sessionsFor(workspace.id);
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: GlassPanel(
+      child: GestureDetector(
+        onLongPress: () => _showWorkspaceMenu(workspace),
+        child: GlassPanel(
         child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
@@ -158,6 +202,17 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
                     ),
                   ),
                   if (active) const Chip(label: Text('ACTIVE')),
+                  PopupMenuButton<String>(
+                    tooltip: 'Workspace actions',
+                    onSelected: (value) {
+                      if (value == 'rename') _renameWorkspace(workspace);
+                      if (value == 'delete') _deleteWorkspace(workspace);
+                    },
+                    itemBuilder: (context) => const [
+                      PopupMenuItem(value: 'rename', child: Text('Rename')),
+                      PopupMenuItem(value: 'delete', child: Text('Delete')),
+                    ],
+                  ),
                 ],
               ),
               const SizedBox(height: 8),
@@ -190,6 +245,19 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
             ],
           ),
         ),
+        ),
+      ),
+    );
+  }
+
+  void _showWorkspaceMenu(BusinessWorkspace workspace) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => SafeArea(
+        child: Wrap(children: [
+          ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Rename workspace'), onTap: () { Navigator.pop(context); _renameWorkspace(workspace); }),
+          ListTile(leading: const Icon(Icons.delete_outline), title: const Text('Delete workspace'), onTap: () { Navigator.pop(context); _deleteWorkspace(workspace); }),
+        ]),
       ),
     );
   }
