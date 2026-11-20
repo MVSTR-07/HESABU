@@ -20,11 +20,15 @@ class MpesaPage extends StatefulWidget {
     required this.controller,
     this.picker,
     this.service,
+    this.importMode = true,
     super.key,
   });
   final AppController controller;
   final Future<SelectedStatement?> Function()? picker;
   final MpesaImportService? service;
+
+  /// Import mode is shown from Workspaces. Tool mode is analysis-only.
+  final bool importMode;
   @override
   State<MpesaPage> createState() => _MpesaPageState();
 }
@@ -241,114 +245,120 @@ class _MpesaPageState extends State<MpesaPage> {
       padding: const EdgeInsets.all(24),
       children: [
         Text(
-          'Financial Statement Analyser',
+          widget.importMode
+              ? 'Import financial documents'
+              : 'Financial Statement Analyser',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 8),
         const Text('Your data stays on this device'),
         const SizedBox(height: 16),
-        _section(
-          'Import a statement',
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Choose a local CSV or text-based PDF (up to 25 MB). Protected PDFs need a password. Sources and results are encrypted locally; passwords are never saved.',
-              ),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 12,
-                runSpacing: 8,
-                children: [
-                  FilledButton.icon(
-                    onPressed: _busy ? null : _pick,
-                    icon: const Icon(Icons.upload_file),
-                    label: const Text('Choose PDF / CSV'),
-                  ),
-                  OutlinedButton(
-                    onPressed: _busy
-                        ? null
-                        : () => _run(
-                            () => _import(
-                              generateSampleMpesaCsv(),
-                              'csv',
-                              'Fabricated mobile-money CSV',
-                            ),
-                          ),
-                    child: const Text('Use fabricated CSV'),
-                  ),
-                  OutlinedButton(
-                    onPressed: _busy
-                        ? null
-                        : () => _run(
-                            () => _import(
-                              generateSampleMpesaPdf(),
-                              'pdf',
-                              'Fabricated mobile-money PDF',
-                              fabricated: true,
-                            ),
-                          ),
-                    child: const Text('Use protected sample PDF'),
-                  ),
-                ],
-              ),
-              if (_busy)
-                const Padding(
-                  padding: EdgeInsets.only(top: 16),
-                  child: LinearProgressIndicator(),
+        if (widget.importMode) ...[
+          _section(
+            'Import a statement',
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Choose a local CSV or text-based PDF (up to 25 MB). Protected PDFs need a password. Sources and results are encrypted locally; passwords are never saved.',
                 ),
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Semantics(
-                    liveRegion: true,
-                    child: Text(
-                      _error!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 12,
+                  runSpacing: 8,
+                  children: [
+                    FilledButton.icon(
+                      onPressed: _busy ? null : _pick,
+                      icon: const Icon(Icons.upload_file),
+                      label: const Text('Choose PDF / CSV'),
+                    ),
+                    OutlinedButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _run(
+                              () => _import(
+                                generateSampleMpesaCsv(),
+                                'csv',
+                                'Fabricated mobile-money CSV',
+                              ),
+                            ),
+                      child: const Text('Use fabricated CSV'),
+                    ),
+                    OutlinedButton(
+                      onPressed: _busy
+                          ? null
+                          : () => _run(
+                              () => _import(
+                                generateSampleMpesaPdf(),
+                                'pdf',
+                                'Fabricated mobile-money PDF',
+                                fabricated: true,
+                              ),
+                            ),
+                      child: const Text('Use protected sample PDF'),
+                    ),
+                  ],
+                ),
+                if (_busy)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 16),
+                    child: LinearProgressIndicator(),
+                  ),
+                if (_error != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: Semantics(
+                      liveRegion: true,
+                      child: Text(
+                        _error!,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ),
                   ),
-                ),
-              if (_history.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: DropdownButtonFormField<int>(
-                    key: ValueKey('saved-${_statement?.id}-${_history.length}'),
-                    initialValue: _statement?.id,
-                    isExpanded: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Saved statements',
-                    ),
-                    items: _history
-                        .map(
-                          (s) => DropdownMenuItem(
-                            value: s.id,
-                            child: Text(
-                              '${s.label} · ${formatKenyaDate(s.importedAt)}',
-                              overflow: TextOverflow.ellipsis,
+                if (_history.isNotEmpty)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16),
+                    child: DropdownButtonFormField<int>(
+                      key: ValueKey(
+                        'saved-${_statement?.id}-${_history.length}',
+                      ),
+                      initialValue: _statement?.id,
+                      isExpanded: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Saved statements',
+                      ),
+                      items: _history
+                          .map(
+                            (s) => DropdownMenuItem(
+                              value: s.id,
+                              child: Text(
+                                '${s.label} · ${formatKenyaDate(s.importedAt)}',
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ),
-                          ),
-                        )
-                        .toList(),
-                    onChanged: _busy
-                        ? null
-                        : (id) {
-                            if (id != null) {
-                              _run(() async {
-                                final value = widget.controller.store
-                                    .loadMpesaStatement(id);
-                                if (value != null && mounted) {
-                                  setState(() => _setStatement(value));
-                                }
-                              });
-                            }
-                          },
+                          )
+                          .toList(),
+                      onChanged: _busy
+                          ? null
+                          : (id) {
+                              if (id != null) {
+                                _run(() async {
+                                  final value = widget.controller.store
+                                      .loadMpesaStatement(id);
+                                  if (value != null && mounted) {
+                                    setState(() => _setStatement(value));
+                                  }
+                                });
+                              }
+                            },
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
-        ),
+        ],
         _section(
           'Anomaly thresholds',
           Column(

@@ -59,7 +59,7 @@ class _Workspace extends StatelessWidget {
       AppPage.dashboard => DashboardPage(controller: controller),
       AppPage.tools => ToolsPage(controller: controller),
       AppPage.settings => SettingsPage(controller: controller),
-      AppPage.mpesa => MpesaPage(controller: controller),
+      AppPage.mpesa => MpesaPage(controller: controller, importMode: false),
       AppPage.customers => CustomersPage(controller: controller),
       AppPage.stock => StockPage(controller: controller),
       AppPage.sales => SalesPage(controller: controller),
@@ -69,6 +69,7 @@ class _Workspace extends StatelessWidget {
       AppPage.imports => ImportsPage(controller: controller),
       AppPage.reports => ReportsPage(controller: controller),
       AppPage.workspaces => WorkspacesPage(controller: controller),
+      AppPage.statementImport => MpesaPage(controller: controller),
     };
     final floatingNavigation = controller.signedIn;
     final visibleNavigation =
@@ -403,11 +404,13 @@ bool _isToolPage(AppPage page) => switch (page) {
   AppPage.profit ||
   AppPage.debts ||
   AppPage.imports ||
-  AppPage.reports => true,
+  AppPage.reports ||
+  AppPage.statementImport => true,
   AppPage.intro ||
   AppPage.account ||
   AppPage.dashboard ||
   AppPage.tools ||
   AppPage.workspaces ||
-  AppPage.settings => false,
+  AppPage.settings ||
+  AppPage.statementImport => false,
 };

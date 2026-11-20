@@ -19,6 +19,17 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
 
   WorkspaceRepository get _repository => widget.controller.workspaces;
 
+  void _openDocumentImport() {
+    if (_repository.activeSession() == null) {
+      setState(
+        () => _message =
+            'Create or select an active session before importing documents.',
+      );
+      return;
+    }
+    widget.controller.navigate(AppPage.statementImport);
+  }
+
   Future<void> _createWorkspace() async {
     final value = await _ask('Create workspace', 'Workspace name');
     if (value == null || !mounted) return;
@@ -172,6 +183,36 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
           const SizedBox(height: 8),
           const Text(
             'A workspace is a private local context for future sources, sessions and reports. Existing records are preserved while workspace ownership is introduced safely.',
+          ),
+          const SizedBox(height: 16),
+          GlassPanel(
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Wrap(
+                spacing: 12,
+                runSpacing: 10,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  const SizedBox(
+                    width: 260,
+                    child: Text(
+                      'Session documents',
+                      style: TextStyle(fontWeight: FontWeight.w700),
+                    ),
+                  ),
+                  FilledButton.icon(
+                    onPressed: _openDocumentImport,
+                    icon: const Icon(Icons.upload_file_outlined),
+                    label: const Text('Upload documents'),
+                  ),
+                  OutlinedButton.icon(
+                    onPressed: _openDocumentImport,
+                    icon: const Icon(Icons.science_outlined),
+                    label: const Text('Use fabricated data'),
+                  ),
+                ],
+              ),
+            ),
           ),
           if (_message != null) ...[
             const SizedBox(height: 16),

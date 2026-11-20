@@ -20,6 +20,7 @@ enum AppPage {
   imports,
   reports,
   workspaces,
+  statementImport,
 }
 
 /// Local-only demo identity and entitlement. No server, payment or password
