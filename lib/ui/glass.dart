@@ -43,7 +43,8 @@ class _GlassPanelState extends State<GlassPanel> {
   @override
   Widget build(BuildContext context) {
     final dark = Theme.of(context).brightness == Brightness.dark;
-    final fill = widget.color ??
+    final fill =
+        widget.color ??
         (dark ? const Color(0xff142846) : const Color(0xffb8c2cd));
     // Windows currently exposes backdrop shader coordinates in the full
     // composited layer rather than the panel's local bounds. Using the custom
@@ -62,85 +63,90 @@ class _GlassPanelState extends State<GlassPanel> {
       builder: (context, bounds) => FutureBuilder<ui.FragmentProgram>(
         future: programFuture,
         builder: (context, snapshot) {
-        ui.ImageFilter? filter;
-        if (snapshot.hasData && ui.ImageFilter.isShaderFilterSupported) {
-          final shader = _shader ??= snapshot.data!.fragmentShader();
-          // The shader works in local panel coordinates. Supplying the actual
-          // panel size is essential: without it, the default zero size causes
-          // invalid UVs and stretched pixels across the backdrop.
-          final width = bounds.maxWidth.isFinite && bounds.maxWidth > 0
-              ? bounds.maxWidth
-              : 1.0;
-          final height = bounds.maxHeight.isFinite && bounds.maxHeight > 0
-              ? bounds.maxHeight
-              : 1.0;
-          shader.setFloat(0, width);
-          shader.setFloat(1, height);
-          // Keep the optical offset below a few physical pixels even when a
-          // caller uses a stronger legacy value. Large offsets create ghosted
-          // text at panel edges instead of a glass highlight.
-          shader.setFloat(2, widget.refractionStrength.clamp(0.0, 0.24));
-          // Keep refraction to one texture lookup and one GPU pass. Bilinear
-          // sampling provides slight softness without a second blur pass.
-          filter = ui.ImageFilter.shader(shader);
-        } else if (widget.refraction) {
-          filter = ui.ImageFilter.blur(sigmaX: 3.2, sigmaY: 3.2);
-        } else {
-          filter = null;
-        }
-        final glassContent = DecoratedBox(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(widget.radius),
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                fill.withValues(
-                  alpha: widget.fillOpacity ?? (dark ? 0.74 : .78),
-                ),
-                fill.withValues(
-                  alpha: widget.fillOpacity == null
-                      ? (dark ? 0.45 : .58)
-                      : widget.fillOpacity! * .72,
+          ui.ImageFilter? filter;
+          if (snapshot.hasData && ui.ImageFilter.isShaderFilterSupported) {
+            final shader = _shader ??= snapshot.data!.fragmentShader();
+            // The shader works in local panel coordinates. Supplying the actual
+            // panel size is essential: without it, the default zero size causes
+            // invalid UVs and stretched pixels across the backdrop.
+            final width = bounds.maxWidth.isFinite && bounds.maxWidth > 0
+                ? bounds.maxWidth
+                : 1.0;
+            final height = bounds.maxHeight.isFinite && bounds.maxHeight > 0
+                ? bounds.maxHeight
+                : 1.0;
+            shader.setFloat(0, width);
+            shader.setFloat(1, height);
+            // Keep the optical offset below a few physical pixels even when a
+            // caller uses a stronger legacy value. Large offsets create ghosted
+            // text at panel edges instead of a glass highlight.
+            shader.setFloat(2, widget.refractionStrength.clamp(0.0, 0.24));
+            // Keep refraction to one texture lookup and one GPU pass. Bilinear
+            // sampling provides slight softness without a second blur pass.
+            filter = ui.ImageFilter.shader(shader);
+          } else if (widget.refraction) {
+            filter = ui.ImageFilter.blur(sigmaX: 3.2, sigmaY: 3.2);
+          } else {
+            filter = null;
+          }
+          final glassContent = DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.radius),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  fill.withValues(
+                    alpha: widget.fillOpacity ?? (dark ? 0.74 : .78),
+                  ),
+                  fill.withValues(
+                    alpha: widget.fillOpacity == null
+                        ? (dark ? 0.45 : .58)
+                        : widget.fillOpacity! * .72,
+                  ),
+                ],
+              ),
+              border: Border.all(
+                color: (dark ? Colors.white : const Color(0xff688dc1))
+                    .withValues(alpha: dark ? 0.13 : .16),
+              ),
+            ),
+            child: Material(
+              type: MaterialType.transparency,
+              child: widget.child,
+            ),
+          );
+          final Widget backdropFilter;
+          if (filter == null) {
+            backdropFilter = glassContent;
+          } else if (widget.grouped) {
+            backdropFilter = BackdropFilter.grouped(
+              filter: filter,
+              child: glassContent,
+            );
+          } else {
+            backdropFilter = BackdropFilter(
+              filter: filter,
+              child: glassContent,
+            );
+          }
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(widget.radius),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: dark ? 0.15 : .035),
+                  blurRadius: 28,
+                  offset: const Offset(0, 10),
                 ),
               ],
             ),
-            border: Border.all(
-              color: (dark ? Colors.white : const Color(0xff688dc1)).withValues(
-                alpha: dark ? 0.13 : .16,
-              ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(widget.radius),
+              clipBehavior: widget.clipBehavior,
+              child: backdropFilter,
             ),
-          ),
-          child: Material(type: MaterialType.transparency, child: widget.child),
-        );
-        final Widget backdropFilter;
-        if (filter == null) {
-          backdropFilter = glassContent;
-        } else if (widget.grouped) {
-          backdropFilter = BackdropFilter.grouped(
-            filter: filter,
-            child: glassContent,
           );
-        } else {
-          backdropFilter = BackdropFilter(filter: filter, child: glassContent);
-        }
-        return Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(widget.radius),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withValues(alpha: dark ? 0.15 : .035),
-                blurRadius: 28,
-                offset: const Offset(0, 10),
-              ),
-            ],
-          ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(widget.radius),
-            clipBehavior: widget.clipBehavior,
-            child: backdropFilter,
-          ),
-        );
         },
       ),
     );
@@ -198,7 +204,8 @@ class _Atmosphere extends CustomPainter {
     glow(
       Offset(size.width * .9, size.height * .12),
       size.width * .55,
-      Color(dark ? 0xff164996 : 0xff71879f).withValues(alpha: dark ? 0.36 : .16),
+      Color(dark ? 0xff164996 : 0xff71879f)
+          .withValues(alpha: dark ? 0.36 : .16),
     );
     glow(
       Offset(size.width * .03, size.height * .58),
@@ -324,53 +331,63 @@ class HesabuBrand extends StatelessWidget {
   const HesabuBrand({this.compact = false, super.key});
   final bool compact;
   @override
-  Widget build(BuildContext context) => Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      Container(
-        width: compact ? 32 : 38,
-        height: compact ? 32 : 38,
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: const LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: [Color(0xff81c5ff), Color(0xff3869e1)],
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      // On a narrow phone the app bar may only have ~100 px after the drawer
+      // and back affordances. Keep the mark visible and avoid clipping the
+      // wordmark at large text/accessibility scales.
+      final showName = !compact || constraints.maxWidth >= 150;
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: compact ? 32 : 38,
+            height: compact ? 32 : 38,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              gradient: const LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [Color(0xff81c5ff), Color(0xff3869e1)],
+              ),
+              border: Border.all(color: Colors.white.withValues(alpha: .4)),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xff3b7bfc).withValues(alpha: .2),
+                  blurRadius: 16,
+                ),
+              ],
+            ),
+            child: const Center(
+              child: Text(
+                'H',
+                style: TextStyle(
+                  fontSize: 23,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  height: 1,
+                ),
+              ),
+            ),
           ),
-          border: Border.all(color: Colors.white.withValues(alpha: .4)),
-          boxShadow: [
-            BoxShadow(
-              color: const Color(0xff3b7bfc).withValues(alpha: .2),
-              blurRadius: 16,
+          if (showName) ...[
+            const SizedBox(width: 12),
+            Text(
+              'HESABU',
+              // The wordmark is a logo, not body copy. Keeping it fixed prevents the
+              // app bar from crowding out navigation at large accessibility scales.
+              textScaler: TextScaler.noScaling,
+              style: TextStyle(
+                fontSize: compact ? 17 : 20,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 3,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
           ],
-        ),
-        child: const Center(
-          child: Text(
-            'H',
-            style: TextStyle(
-              fontSize: 23,
-              fontWeight: FontWeight.w800,
-              color: Colors.white,
-              height: 1,
-            ),
-          ),
-        ),
-      ),
-      const SizedBox(width: 12),
-      Text(
-        'HESABU',
-        // The wordmark is a logo, not body copy. Keeping it fixed prevents the
-        // app bar from crowding out navigation at large accessibility scales.
-        textScaler: TextScaler.noScaling,
-        style: TextStyle(
-          fontSize: compact ? 17 : 20,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 3,
-          color: Theme.of(context).colorScheme.onSurface,
-        ),
-      ),
-    ],
+        ],
+      );
+    },
   );
 }
 

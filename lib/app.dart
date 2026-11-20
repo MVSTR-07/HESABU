@@ -77,6 +77,9 @@ class _Workspace extends StatelessWidget {
             controller.page == AppPage.settings);
     return HesabuBackdrop(
       child: Scaffold(
+        drawer: controller.signedIn
+            ? _MobileNavigationDrawer(controller: controller)
+            : null,
         appBar: AppBar(
           toolbarHeight: 76,
           leading: _isToolPage(controller.page)
@@ -169,8 +172,10 @@ class _Workspace extends StatelessWidget {
                             constraints: const BoxConstraints(maxWidth: 440),
                             child: GlassPanel(
                               radius: 32,
-                              fillOpacity: 0.34,
-                              refractionStrength: 2.7,
+                              // Keep this control visibly glassy but never
+                              // transparent over scrolling cards.
+                              fillOpacity: 0.78,
+                              refractionStrength: 1.4,
                               grouped: false,
                               child: NavigationBar(
                                 selectedIndex:
@@ -210,6 +215,82 @@ class _Workspace extends StatelessWidget {
   }
 }
 
+class _MobileNavigationDrawer extends StatelessWidget {
+  const _MobileNavigationDrawer({required this.controller});
+  final AppController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Drawer(
+      backgroundColor: theme.colorScheme.surface,
+      child: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(12, 20, 12, 20),
+          children: [
+            const Padding(
+              padding: EdgeInsets.fromLTRB(12, 8, 12, 24),
+              child: HesabuBrand(compact: false),
+            ),
+            _item(
+              context,
+              'Overview',
+              Icons.dashboard_outlined,
+              AppPage.dashboard,
+            ),
+            _item(context, 'Tools', Icons.widgets_outlined, AppPage.tools),
+            _item(
+              context,
+              'Workspaces',
+              Icons.business_center_outlined,
+              AppPage.workspaces,
+            ),
+            _item(
+              context,
+              'Reports',
+              Icons.insert_chart_outlined,
+              AppPage.reports,
+            ),
+            const Divider(height: 32),
+            _item(
+              context,
+              'Settings',
+              Icons.settings_outlined,
+              AppPage.settings,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _item(
+    BuildContext context,
+    String label,
+    IconData icon,
+    AppPage page,
+  ) {
+    final selected = controller.page == page;
+    return ListTile(
+      selected: selected,
+      leading: Icon(icon),
+      title: Text(label),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+      onTap: controller.busy
+          ? null
+          : () {
+              Navigator.pop(context);
+              controller.navigate(
+                page == AppPage.reports &&
+                        controller.workspaces.activeSession() == null
+                    ? AppPage.workspaces
+                    : page,
+              );
+            },
+    );
+  }
+}
+
 class _DesktopNavRail extends StatelessWidget {
   const _DesktopNavRail({required this.controller});
   final AppController controller;
@@ -230,16 +311,32 @@ class _DesktopNavRail extends StatelessWidget {
             children: [
               const HesabuBrand(compact: false),
               const SizedBox(height: 28),
-              _nav(context, 'Overview', Icons.dashboard_outlined,
-                  AppPage.dashboard),
+              _nav(
+                context,
+                'Overview',
+                Icons.dashboard_outlined,
+                AppPage.dashboard,
+              ),
               _nav(context, 'Tools', Icons.widgets_outlined, AppPage.tools),
-              _nav(context, 'Workspaces', Icons.business_center_outlined,
-                  AppPage.workspaces),
-              _nav(context, 'Reports', Icons.insert_chart_outlined,
-                  AppPage.reports),
+              _nav(
+                context,
+                'Workspaces',
+                Icons.business_center_outlined,
+                AppPage.workspaces,
+              ),
+              _nav(
+                context,
+                'Reports',
+                Icons.insert_chart_outlined,
+                AppPage.reports,
+              ),
               const Spacer(),
-              _nav(context, 'Settings', Icons.settings_outlined,
-                  AppPage.settings),
+              _nav(
+                context,
+                'Settings',
+                Icons.settings_outlined,
+                AppPage.settings,
+              ),
             ],
           ),
         ),

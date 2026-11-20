@@ -38,6 +38,9 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       _repository.createSession(workspace.id, value);
       setState(() => _message = 'Analysis session created locally.');
       widget.controller.refresh();
+      // A session is the safe analysis sandbox. Take the user directly to the
+      // tool catalogue so the next step is importing or analysing data.
+      widget.controller.navigate(AppPage.tools);
     } on FormatException catch (error) {
       setState(() => _message = error.message);
     }
@@ -48,13 +51,20 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       return true;
     }
     if (!widget.controller.hasAccountPassword) {
-      setState(() => _message = 'Set an account password before editing workspaces.');
+      setState(
+        () => _message = 'Set an account password before editing workspaces.',
+      );
       return false;
     }
-    final value = await _ask('Confirm workspace change', 'Account password', password: true);
+    final value = await _ask(
+      'Confirm workspace change',
+      'Account password',
+      password: true,
+    );
     if (value == null) return false;
     final valid = widget.controller.verifyAccountPassword(value);
-    if (!valid && mounted) setState(() => _message = 'Incorrect account password.');
+    if (!valid && mounted)
+      setState(() => _message = 'Incorrect account password.');
     return valid;
   }
 
@@ -77,10 +87,18 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text('Delete ${workspace.name}?'),
-        content: const Text('This removes the workspace and its session metadata. Imported business records remain in the encrypted store until you clear them explicitly.'),
+        content: const Text(
+          'This removes the workspace and its session metadata. Imported business records remain in the encrypted store until you clear them explicitly.',
+        ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: const Text('Cancel')),
-          FilledButton(onPressed: () => Navigator.pop(context, true), child: const Text('Delete workspace')),
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Delete workspace'),
+          ),
         ],
       ),
     );
@@ -90,7 +108,11 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     widget.controller.refresh();
   }
 
-  Future<String?> _ask(String title, String label, {bool password = false}) async {
+  Future<String?> _ask(
+    String title,
+    String label, {
+    bool password = false,
+  }) async {
     var value = '';
     return showDialog<String>(
       context: context,
@@ -178,7 +200,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
           else
             ...all.map(
               (workspace) =>
-              _workspaceCard(workspace, active?.id == workspace.id),
+                  _workspaceCard(workspace, active?.id == workspace.id),
             ),
           const SizedBox(height: 24),
           const PrivacyNote(),
@@ -195,63 +217,67 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       child: GestureDetector(
         onLongPress: () => _showWorkspaceMenu(workspace),
         child: GlassPanel(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      workspace.name,
-                      style: Theme.of(context).textTheme.titleLarge,
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        workspace.name,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
                     ),
-                  ),
-                  if (active) const Chip(label: Text('ACTIVE')),
-                  PopupMenuButton<String>(
-                    tooltip: 'Workspace actions',
-                    onSelected: (value) {
-                      if (value == 'rename') _renameWorkspace(workspace);
-                      if (value == 'delete') _deleteWorkspace(workspace);
-                    },
-                    itemBuilder: (context) => const [
-                      PopupMenuItem(value: 'rename', child: Text('Rename')),
-                      PopupMenuItem(value: 'delete', child: Text('Delete')),
-                    ],
-                  ),
+                    if (active) const Chip(label: Text('ACTIVE')),
+                    PopupMenuButton<String>(
+                      tooltip: 'Workspace actions',
+                      onSelected: (value) {
+                        if (value == 'rename') _renameWorkspace(workspace);
+                        if (value == 'delete') _deleteWorkspace(workspace);
+                      },
+                      itemBuilder: (context) => const [
+                        PopupMenuItem(value: 'rename', child: Text('Rename')),
+                        PopupMenuItem(value: 'delete', child: Text('Delete')),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text('${sessions.length} analysis session(s) · Stored locally'),
+                const SizedBox(height: 12),
+                Wrap(
+                  spacing: 10,
+                  runSpacing: 8,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        _repository.selectWorkspace(workspace.id);
+                        setState(
+                          () => _message = '${workspace.name} is active.',
+                        );
+                        widget.controller.refresh();
+                      },
+                      child: Text(
+                        active ? 'Active workspace' : 'Use workspace',
+                      ),
+                    ),
+                    FilledButton.tonal(
+                      onPressed: () => _createSession(workspace),
+                      child: const Text('Create session'),
+                    ),
+                  ],
+                ),
+                if (sessions.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  const Text('Recent sessions'),
+                  const SizedBox(height: 6),
+                  ...sessions.take(4).map(_sessionRow),
                 ],
-              ),
-              const SizedBox(height: 8),
-              Text('${sessions.length} analysis session(s) · Stored locally'),
-              const SizedBox(height: 12),
-              Wrap(
-                spacing: 10,
-                runSpacing: 8,
-                children: [
-                  OutlinedButton(
-                    onPressed: () {
-                      _repository.selectWorkspace(workspace.id);
-                      setState(() => _message = '${workspace.name} is active.');
-                      widget.controller.refresh();
-                    },
-                    child: Text(active ? 'Active workspace' : 'Use workspace'),
-                  ),
-                  FilledButton.tonal(
-                    onPressed: () => _createSession(workspace),
-                    child: const Text('Create session'),
-                  ),
-                ],
-              ),
-              if (sessions.isNotEmpty) ...[
-                const SizedBox(height: 16),
-                const Text('Recent sessions'),
-                const SizedBox(height: 6),
-                ...sessions.take(4).map(_sessionRow),
               ],
-            ],
+            ),
           ),
-        ),
         ),
       ),
     );
@@ -261,10 +287,26 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     showModalBottomSheet<void>(
       context: context,
       builder: (context) => SafeArea(
-        child: Wrap(children: [
-          ListTile(leading: const Icon(Icons.edit_outlined), title: const Text('Rename workspace'), onTap: () { Navigator.pop(context); _renameWorkspace(workspace); }),
-          ListTile(leading: const Icon(Icons.delete_outline), title: const Text('Delete workspace'), onTap: () { Navigator.pop(context); _deleteWorkspace(workspace); }),
-        ]),
+        child: Wrap(
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Rename workspace'),
+              onTap: () {
+                Navigator.pop(context);
+                _renameWorkspace(workspace);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: const Text('Delete workspace'),
+              onTap: () {
+                Navigator.pop(context);
+                _deleteWorkspace(workspace);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -274,16 +316,29 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     title: Text(session.name),
     subtitle: Text(session.state.name),
     trailing: session.state == AnalysisSessionState.active
-        ? TextButton(
-            onPressed: () {
-              _repository.updateSessionState(
-                session.id,
-                AnalysisSessionState.completed,
-              );
-              setState(() => _message = 'Session marked complete.');
-              widget.controller.refresh();
-            },
-            child: const Text('Complete'),
+        ? Wrap(
+            spacing: 4,
+            children: [
+              TextButton(
+                onPressed: () {
+                  _repository.selectSession(session.id);
+                  widget.controller.refresh();
+                  widget.controller.navigate(AppPage.tools);
+                },
+                child: const Text('Open tools'),
+              ),
+              TextButton(
+                onPressed: () {
+                  _repository.updateSessionState(
+                    session.id,
+                    AnalysisSessionState.completed,
+                  );
+                  setState(() => _message = 'Session marked complete.');
+                  widget.controller.refresh();
+                },
+                child: const Text('Complete'),
+              ),
+            ],
           )
         : null,
   );

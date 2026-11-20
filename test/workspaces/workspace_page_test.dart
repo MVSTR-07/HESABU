@@ -28,6 +28,10 @@ void main() {
     await tester.tap(find.text('Save locally'));
     await tester.pumpAndSettle();
 
+    // Creating a session opens the sandbox's tool catalogue immediately.
+    expect(controller.page, AppPage.tools);
+    controller.navigate(AppPage.workspaces);
+    await tester.pumpAndSettle();
     expect(find.text('October review'), findsOneWidget);
     await tester.tap(find.text('Complete'));
     await tester.pumpAndSettle();

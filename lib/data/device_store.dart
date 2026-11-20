@@ -139,14 +139,20 @@ class DeviceStore implements LocalStore {
     } else {
       throw UnsupportedError('HESABU currently supports Windows and Android.');
     }
-    var ancestor = base;
-    while (true) {
-      if (await FileSystemEntity.type(ancestor.path, followLinks: false) ==
-          FileSystemEntityType.link) {
-        throw StateError('Linked storage directories are not supported.');
+    // Windows storage is resolved under LocalAppData and must not traverse
+    // user-created links. Android's application-support directory is supplied
+    // by the OS and commonly has a `/data/user/0` system link in its ancestry;
+    // rejecting that path prevents every Android first launch.
+    if (Platform.isWindows) {
+      var ancestor = base;
+      while (true) {
+        if (await FileSystemEntity.type(ancestor.path, followLinks: false) ==
+            FileSystemEntityType.link) {
+          throw StateError('Linked storage directories are not supported.');
+        }
+        if (p.equals(ancestor.path, ancestor.parent.path)) break;
+        ancestor = ancestor.parent;
       }
-      if (p.equals(ancestor.path, ancestor.parent.path)) break;
-      ancestor = ancestor.parent;
     }
     return base;
   }
