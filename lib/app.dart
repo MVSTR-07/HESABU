@@ -258,7 +258,14 @@ class _DesktopNavRail extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: controller.busy ? null : () => controller.navigate(page),
+          onTap: controller.busy
+              ? null
+              : () => controller.navigate(
+                  page == AppPage.reports &&
+                          controller.workspaces.activeSession() == null
+                      ? AppPage.workspaces
+                      : page,
+                ),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
             child: Row(

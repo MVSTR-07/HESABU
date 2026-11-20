@@ -12,6 +12,7 @@ class WorkspaceRepository {
   static const _workspacesKey = 'workspaces_v1';
   static const _sessionsKey = 'analysis_sessions_v1';
   static const _activeWorkspaceKey = 'active_workspace_id';
+  static const _activeSessionKey = 'active_session_id';
 
   List<BusinessWorkspace> workspaces() => _decodeList(
     _store.readSetting(_workspacesKey),
@@ -30,6 +31,18 @@ class WorkspaceRepository {
     if (id == null) return null;
     for (final workspace in workspaces()) {
       if (workspace.id == id) return workspace;
+    }
+    return null;
+  }
+
+  AnalysisSession? activeSession() {
+    final workspace = activeWorkspace();
+    final id = _store.readSetting(_activeSessionKey);
+    if (workspace == null || id == null) return null;
+    for (final session in sessionsFor(workspace.id)) {
+      if (session.id == id && session.state == AnalysisSessionState.active) {
+        return session;
+      }
     }
     return null;
   }
@@ -53,6 +66,7 @@ class WorkspaceRepository {
       throw StateError('That workspace is no longer available.');
     }
     _store.writeSetting(_activeWorkspaceKey, id);
+    _store.writeSetting(_activeSessionKey, '');
   }
 
   AnalysisSession createSession(String workspaceId, String value) {
@@ -69,7 +83,25 @@ class WorkspaceRepository {
     );
     final all = _sessions()..add(session);
     _saveSessions(all);
+    _store.writeSetting(_activeSessionKey, session.id);
     return session;
+  }
+
+  void selectSession(String id) {
+    AnalysisSession? session;
+    for (final value in _sessions()) {
+      if (value.id == id) {
+        session = value;
+        break;
+      }
+    }
+    if (session == null || session.state != AnalysisSessionState.active) {
+      throw StateError('That session is no longer active.');
+    }
+    if (activeWorkspace()?.id != session.workspaceId) {
+      throw StateError('Select the session workspace first.');
+    }
+    _store.writeSetting(_activeSessionKey, id);
   }
 
   void updateSessionState(String id, AnalysisSessionState state) {
@@ -83,6 +115,10 @@ class WorkspaceRepository {
           : null,
     );
     _saveSessions(all);
+    if (state != AnalysisSessionState.active &&
+        _store.readSetting(_activeSessionKey) == id) {
+      _store.writeSetting(_activeSessionKey, '');
+    }
   }
 
   List<AnalysisSession> _sessions() =>

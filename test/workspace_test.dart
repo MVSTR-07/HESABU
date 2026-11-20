@@ -65,6 +65,10 @@ void main() {
     await tester.tap(find.text('Create demo profile'));
     await tester.pumpAndSettle();
     expect(controller.page, AppPage.dashboard);
+    final workspace = controller.workspaces.createWorkspace('Demo workspace');
+    controller.workspaces.createSession(workspace.id, 'Demo session');
+    controller.refresh();
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Load sample data'), warnIfMissed: false);
     // The control sits below the summary on the default 600px test viewport.
     if (controller.store.sampleCount == 0) {
@@ -109,6 +113,9 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     final controller = AppController(MemoryStore());
     controller.enterDemo('phone@example.test', create: true);
+    final workspace = controller.workspaces.createWorkspace('Phone workspace');
+    controller.workspaces.createSession(workspace.id, 'Phone session');
+    controller.refresh();
     await tester.pumpWidget(
       MediaQuery(
         data: const MediaQueryData(textScaler: TextScaler.linear(1.4)),

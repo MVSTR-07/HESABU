@@ -55,19 +55,22 @@ class DashboardPage extends StatelessWidget {
         const SizedBox(height: 24),
         _DashboardSummary(controller: controller),
         const SizedBox(height: 28),
-        _DashboardAnalytics(controller: controller),
-        const SizedBox(height: 28),
-        Text(
-          'Explore your tools',
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        const SizedBox(height: 8),
-        const Text(
-          'Financial statements and customer performance are ready. More sources are coming soon.',
-        ),
-        const SizedBox(height: 16),
-        LayoutBuilder(
-          builder: (context, constraints) {
+        if (controller.workspaces.activeSession() == null)
+          _SessionGate(controller: controller)
+        else ...[
+          _DashboardAnalytics(controller: controller),
+          const SizedBox(height: 28),
+          Text(
+            'Explore your tools',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Tools are available inside the active private analysis session.',
+          ),
+          const SizedBox(height: 16),
+          LayoutBuilder(
+            builder: (context, constraints) {
             final columns = constraints.maxWidth >= 900
                 ? 3
                 : constraints.maxWidth >= 560
@@ -181,10 +184,39 @@ class DashboardPage extends StatelessWidget {
                 );
               },
             );
-          },
-        ),
+            },
+          ),
+        ],
         const SizedBox(height: 24),
       ],
+    ),
+  );
+}
+
+class _SessionGate extends StatelessWidget {
+  const _SessionGate({required this.controller});
+  final AppController controller;
+
+  @override
+  Widget build(BuildContext context) => GlassPanel(
+    child: Padding(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.lock_outline, color: Theme.of(context).colorScheme.secondary),
+          const SizedBox(height: 12),
+          Text('Create a workspace and session first', style: Theme.of(context).textTheme.titleLarge),
+          const SizedBox(height: 8),
+          const Text('Your analysis tools appear only inside a private session. This keeps each client job separated, reviewable and easy to clear when finished.'),
+          const SizedBox(height: 16),
+          FilledButton.icon(
+            onPressed: () => controller.navigate(AppPage.workspaces),
+            icon: const Icon(Icons.business_center_outlined),
+            label: const Text('Open workspaces'),
+          ),
+        ],
+      ),
     ),
   );
 }
