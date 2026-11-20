@@ -1,5 +1,6 @@
 import 'dart:ui' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Shared Android/Windows glass; grouped filters avoid a blur pass per card.
@@ -44,8 +45,14 @@ class _GlassPanelState extends State<GlassPanel> {
     final dark = Theme.of(context).brightness == Brightness.dark;
     final fill =
         widget.color ?? (dark ? const Color(0xff142846) : Colors.white);
+    // Windows currently exposes backdrop shader coordinates in the full
+    // composited layer rather than the panel's local bounds. Using the custom
+    // lens there creates stretched text trails, so use a small stable frost
+    // blur on Windows while retaining real refraction on Android.
     final supportsRefraction =
-        widget.refraction && ui.ImageFilter.isShaderFilterSupported;
+        widget.refraction &&
+        defaultTargetPlatform != TargetPlatform.windows &&
+        ui.ImageFilter.isShaderFilterSupported;
     final programFuture = supportsRefraction
         ? GlassPanel._refractionProgram ??= ui.FragmentProgram.fromAsset(
             'shaders/glass_refraction.frag',
@@ -76,9 +83,9 @@ class _GlassPanelState extends State<GlassPanel> {
           // Keep refraction to one texture lookup and one GPU pass. Bilinear
           // sampling provides slight softness without a second blur pass.
           filter = ui.ImageFilter.shader(shader);
+        } else if (widget.refraction) {
+          filter = ui.ImageFilter.blur(sigmaX: 3.2, sigmaY: 3.2);
         } else {
-          // Avoid expensive backdrop blur on devices without shader support.
-          // The translucent surface and highlights remain visible.
           filter = null;
         }
         final glassContent = DecoratedBox(
