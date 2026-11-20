@@ -135,59 +135,140 @@ class _Workspace extends StatelessWidget {
             const SizedBox(width: 12),
           ],
         ),
-        body: Stack(
-          children: [
-            Positioned.fill(
-              child: AbsorbPointer(absorbing: controller.busy, child: content),
-            ),
-            if (visibleNavigation)
-              Positioned(
-                left: 0,
-                right: 0,
-                bottom: 8,
-                child: SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Align(
-                      child: ConstrainedBox(
-                        constraints: const BoxConstraints(maxWidth: 440),
-                        child: GlassPanel(
-                          radius: 32,
-                          fillOpacity: 0.34,
-                          refractionStrength: 2.7,
-                          grouped: false,
-                          child: NavigationBar(
-                            selectedIndex: controller.page == AppPage.settings
-                                ? 1
-                                : 0,
-                            onDestinationSelected: controller.busy
-                                ? null
-                                : (i) => controller.navigate(
-                                    i == 0
-                                        ? AppPage.dashboard
-                                        : AppPage.settings,
+        body: LayoutBuilder(
+          builder: (context, constraints) {
+            final desktop = constraints.maxWidth >= 900 && controller.signedIn;
+            final page = AbsorbPointer(
+              absorbing: controller.busy,
+              child: content,
+            );
+            if (desktop) {
+              return Row(
+                children: [
+                  _DesktopNavRail(controller: controller),
+                  Expanded(child: page),
+                ],
+              );
+            }
+            return Stack(
+              children: [
+                Positioned.fill(child: page),
+                if (visibleNavigation)
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    bottom: 8,
+                    child: SafeArea(
+                      top: false,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Align(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 440),
+                            child: GlassPanel(
+                              radius: 32,
+                              fillOpacity: 0.34,
+                              refractionStrength: 2.7,
+                              grouped: false,
+                              child: NavigationBar(
+                                selectedIndex:
+                                    controller.page == AppPage.settings ? 1 : 0,
+                                onDestinationSelected: controller.busy
+                                    ? null
+                                    : (i) => controller.navigate(
+                                        i == 0
+                                            ? AppPage.dashboard
+                                            : AppPage.settings,
+                                      ),
+                                destinations: const [
+                                  NavigationDestination(
+                                    icon: Icon(Icons.grid_view_outlined),
+                                    selectedIcon: Icon(Icons.grid_view),
+                                    label: 'Dashboard',
                                   ),
-                            destinations: const [
-                              NavigationDestination(
-                                icon: Icon(Icons.grid_view_outlined),
-                                selectedIcon: Icon(Icons.grid_view),
-                                label: 'Dashboard',
+                                  NavigationDestination(
+                                    icon: Icon(Icons.settings_outlined),
+                                    selectedIcon: Icon(Icons.settings),
+                                    label: 'Settings',
+                                  ),
+                                ],
                               ),
-                              NavigationDestination(
-                                icon: Icon(Icons.settings_outlined),
-                                selectedIcon: Icon(Icons.settings),
-                                label: 'Settings',
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ),
-          ],
+              ],
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class _DesktopNavRail extends StatelessWidget {
+  const _DesktopNavRail({required this.controller});
+  final AppController controller;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    width: 204,
+    child: GlassPanel(
+      radius: 0,
+      fillOpacity: .18,
+      refractionStrength: 1.4,
+      grouped: false,
+      child: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const HesabuBrand(compact: false),
+              const SizedBox(height: 28),
+              _nav(context, 'Overview', Icons.dashboard_outlined,
+                  AppPage.dashboard),
+              _nav(context, 'Workspaces', Icons.business_center_outlined,
+                  AppPage.workspaces),
+              _nav(context, 'Reports', Icons.insert_chart_outlined,
+                  AppPage.reports),
+              const Spacer(),
+              _nav(context, 'Settings', Icons.settings_outlined,
+                  AppPage.settings),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+
+  Widget _nav(BuildContext context, String label, IconData icon, AppPage page) {
+    final selected = controller.page == page;
+    final color = selected
+        ? Theme.of(context).colorScheme.onPrimary
+        : Theme.of(context).colorScheme.onSurfaceVariant;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Material(
+        color: selected
+            ? Theme.of(context).colorScheme.primary.withValues(alpha: .82)
+            : Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(12),
+          onTap: controller.busy ? null : () => controller.navigate(page),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 11),
+            child: Row(
+              children: [
+                Icon(icon, size: 19, color: color),
+                const SizedBox(width: 10),
+                Text(label, style: TextStyle(color: color)),
+              ],
+            ),
+          ),
         ),
       ),
     );

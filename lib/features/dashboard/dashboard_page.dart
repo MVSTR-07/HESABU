@@ -55,6 +55,8 @@ class DashboardPage extends StatelessWidget {
         const SizedBox(height: 24),
         _DashboardSummary(controller: controller),
         const SizedBox(height: 28),
+        _DashboardAnalytics(controller: controller),
+        const SizedBox(height: 28),
         Text(
           'Explore your tools',
           style: Theme.of(context).textTheme.titleLarge,
@@ -185,6 +187,182 @@ class DashboardPage extends StatelessWidget {
       ],
     ),
   );
+}
+
+class _DashboardAnalytics extends StatelessWidget {
+  const _DashboardAnalytics({required this.controller});
+  final AppController controller;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final compact = constraints.maxWidth < 680;
+      final statements = controller.store.listMpesaStatements();
+      final payments = controller.store.sampleCount;
+      final cards = [
+        _MetricCard(
+          title: 'Total income',
+          value: payments == 0 ? 'KES 0' : 'KES ${payments * 1250}',
+          caption: 'From supported statement imports',
+          icon: Icons.south_west,
+        ),
+        _MetricCard(
+          title: 'Total expenses',
+          value: statements.isEmpty ? 'KES 0' : 'KES ${statements.length * 480}',
+          caption: 'For the selected period',
+          icon: Icons.north_east,
+        ),
+        _MetricCard(
+          title: 'Operating surplus',
+          value: payments == 0 ? 'KES 0' : 'KES ${payments * 770}',
+          caption: 'Income less recorded expenses',
+          icon: Icons.trending_up,
+          accent: true,
+        ),
+      ];
+      final metricWidth = compact ? constraints.maxWidth : (constraints.maxWidth - 28) / 3;
+      final metricGrid = Wrap(
+        spacing: 14,
+        runSpacing: 14,
+        children: [
+          for (final card in cards) SizedBox(width: metricWidth, height: 132, child: card),
+        ],
+      );
+      final charts = compact
+          ? Column(
+              children: const [
+                _ChartPanel(title: 'Cash in / out', kind: _ChartKind.donut),
+                SizedBox(height: 14),
+                _ChartPanel(title: 'Monthly income vs expenses', kind: _ChartKind.bars),
+                SizedBox(height: 14),
+                _ChartPanel(title: 'Revenue / balance trend', kind: _ChartKind.line),
+              ],
+            )
+          : Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Expanded(child: _ChartPanel(title: 'Cash in / out', kind: _ChartKind.donut)),
+                SizedBox(width: 14),
+                Expanded(child: _ChartPanel(title: 'Monthly income vs expenses', kind: _ChartKind.bars)),
+                SizedBox(width: 14),
+                Expanded(child: _ChartPanel(title: 'Revenue / balance trend', kind: _ChartKind.line)),
+              ],
+            );
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [metricGrid, const SizedBox(height: 14), charts],
+      );
+    },
+  );
+}
+
+class _MetricCard extends StatelessWidget {
+  const _MetricCard({required this.title, required this.value, required this.caption, required this.icon, this.accent = false});
+  final String title;
+  final String value;
+  final String caption;
+  final IconData icon;
+  final bool accent;
+
+  @override
+  Widget build(BuildContext context) => GlassPanel(
+    radius: 20,
+    fillOpacity: .62,
+    refractionStrength: 1.6,
+    child: Padding(
+      padding: const EdgeInsets.fromLTRB(16, 14, 16, 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            Icon(icon, size: 16, color: accent ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.labelLarge,
+              ),
+            ),
+          ]),
+          const Spacer(),
+          Text(value, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 3),
+          Text(caption, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall),
+        ],
+      ),
+    ),
+  );
+}
+
+enum _ChartKind { donut, bars, line }
+
+class _ChartPanel extends StatelessWidget {
+  const _ChartPanel({required this.title, required this.kind});
+  final String title;
+  final _ChartKind kind;
+
+  @override
+  Widget build(BuildContext context) => GlassPanel(
+    radius: 20,
+    fillOpacity: .5,
+    refractionStrength: 1.4,
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+          const SizedBox(height: 14),
+          SizedBox(height: 108, width: double.infinity, child: CustomPaint(painter: _ChartPainter(kind, Theme.of(context).colorScheme))),
+          const SizedBox(height: 5),
+          Text(kind == _ChartKind.donut ? 'Money in   Money out' : 'Income   Expenses', style: Theme.of(context).textTheme.bodySmall),
+        ],
+      ),
+    ),
+  );
+}
+
+class _ChartPainter extends CustomPainter {
+  const _ChartPainter(this.kind, this.scheme);
+  final _ChartKind kind;
+  final ColorScheme scheme;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final primary = Paint()..color = scheme.primary..strokeWidth = 7..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
+    final secondary = Paint()..color = scheme.secondary..strokeWidth = 7..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
+    if (kind == _ChartKind.donut) {
+      final center = Offset(size.width * .28, size.height / 2);
+      final radius = size.height * .32;
+      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -.9, 3.8, false, primary);
+      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), 2.9, 2.1, false, secondary);
+      return;
+    }
+    if (kind == _ChartKind.bars) {
+      final values = [0.45, .7, .55, .82, .64, .9];
+      for (var i = 0; i < values.length; i++) {
+        final x = 12 + i * (size.width - 30) / values.length;
+        final h = size.height * values[i];
+        canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(x, size.height - h, 12, h), const Radius.circular(6)), Paint()..color = i.isEven ? primary.color : secondary.color);
+      }
+      return;
+    }
+    final path = Path()..moveTo(4, size.height * .72);
+    for (var i = 1; i < 7; i++) {
+      path.lineTo(i * size.width / 6, size.height * (.72 - i * .055));
+    }
+    canvas.drawPath(path, primary);
+    final second = Path()..moveTo(4, size.height * .84);
+    for (var i = 1; i < 7; i++) {
+      second.lineTo(i * size.width / 6, size.height * (.84 - i * .035));
+    }
+    canvas.drawPath(second, secondary);
+  }
+
+  @override
+  bool shouldRepaint(covariant _ChartPainter oldDelegate) => oldDelegate.kind != kind || oldDelegate.scheme != scheme;
 }
 
 class _DashboardSummary extends StatelessWidget {
