@@ -42,7 +42,9 @@ class MpesaImportService {
       final text = await _pdfReader.read(bytes, password: password);
       parsed = await _parsePdfTextOffThread(text);
     } else {
-      throw const StatementImportException('Choose an M-Pesa PDF or CSV file.');
+      throw const StatementImportException(
+        'Choose a supported financial-statement PDF or CSV file. M-Pesa is the first supported source.',
+      );
     }
     final transactions = parsed.transactions
         .map(const MpesaClassifier().classify)

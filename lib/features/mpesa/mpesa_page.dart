@@ -127,7 +127,9 @@ class _MpesaPageState extends State<MpesaPage> {
       throw const StatementImportException('The selected file is empty.');
     }
     if (!['csv', 'pdf'].contains(format)) {
-      throw const StatementImportException('Choose an M-Pesa PDF or CSV file.');
+      throw const StatementImportException(
+        'Choose a supported financial-statement PDF or CSV file. M-Pesa is the first supported source.',
+      );
     }
     String? password;
     try {
@@ -239,7 +241,7 @@ class _MpesaPageState extends State<MpesaPage> {
       padding: const EdgeInsets.all(24),
       children: [
         Text(
-          'M-Pesa Statement Analyser',
+          'Financial Statement Analyser',
           style: Theme.of(context).textTheme.headlineMedium,
         ),
         const SizedBox(height: 8),
@@ -270,7 +272,7 @@ class _MpesaPageState extends State<MpesaPage> {
                             () => _import(
                               generateSampleMpesaCsv(),
                               'csv',
-                              'Fabricated M-Pesa CSV',
+                              'Fabricated mobile-money CSV',
                             ),
                           ),
                     child: const Text('Use fabricated CSV'),
@@ -282,7 +284,7 @@ class _MpesaPageState extends State<MpesaPage> {
                             () => _import(
                               generateSampleMpesaPdf(),
                               'pdf',
-                              'Fabricated M-Pesa PDF',
+                              'Fabricated mobile-money PDF',
                               fabricated: true,
                             ),
                           ),

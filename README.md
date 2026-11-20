@@ -14,15 +14,17 @@ published product.
 
 ## What you can explore
 
-- **M-Pesa statements:** import CSV or supported text-based PDF statements and
-  review money in and out, fees, activity patterns and rule-based flags.
+- **Financial statements:** import supported CSV or text-based PDF statements
+  and review money in and out, fees, activity patterns and rule-based flags.
+  M-Pesa is the first supported source; bank, wallet, card and POS connectors
+  are planned as separate tested adapters.
 - **Customer performance:** review payment history, customer segments,
   concentration and personalised drop-off signals.
 - **Stock, sales and expenses:** enter records locally and explore summaries.
 - **Profit and loss, balances, imports and reports:** create a simple working
   surplus view, track customer/supplier balances, review CSV/Excel rows before
-  import, and save local PDF/Excel summaries. These tools are intended as a
-  practical working view, not a replacement for formal accounts.
+  import, and save local PDF/Excel visual summaries. These tools are intended
+  as a practical working view, not a replacement for formal accounts.
 - **Light and dark appearance:** the shared interface uses a dark-blue glass
   style, with a light option.
 

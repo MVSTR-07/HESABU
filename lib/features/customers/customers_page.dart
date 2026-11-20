@@ -158,7 +158,7 @@ class _CustomersPageState extends State<CustomersPage> {
           const SizedBox(height: 12),
           section('Data and analysis date', [
             const Text(
-              'Received customer payments from all saved M-Pesa imports are deduplicated automatically. Import sales CSVs or use fabricated data while PDF compatibility is on hold.',
+              'Received customer payments from all saved supported-statement imports are deduplicated automatically. Import sales CSVs or use fabricated data while additional source formats are being added.',
             ),
             const Text(
               'Sales CSV columns: Date, Customer Name, Phone, Amount, Sale ID (optional). Amounts are positive KES. Do not import the same sale through both sources: cross-source matching is not guessed.',
@@ -299,7 +299,7 @@ class _CustomersPageState extends State<CustomersPage> {
           ]),
           section('Merge duplicate identities', [
             const Text(
-              'Choose two confirmed identities. Balances and original M-Pesa statements are not changed. Names alone do not prove two people are the same.',
+              'Choose two confirmed identities. Balances and original financial statements are not changed. Names alone do not prove two people are the same.',
             ),
             const SizedBox(height: 12),
             if (results.customers.length >= 2)

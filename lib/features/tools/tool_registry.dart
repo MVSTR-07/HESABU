@@ -26,8 +26,8 @@ class ToolDefinition {
 const tools = [
   ToolDefinition(
     'mpesa',
-    'M-Pesa statements',
-    'Understand where your money goes.',
+    'Financial statements',
+    'Understand cash movement across your sources.',
     Icons.account_balance_wallet_outlined,
     stage: 2,
     page: AppPage.mpesa,

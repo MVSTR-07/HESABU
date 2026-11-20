@@ -156,7 +156,7 @@ class MpesaStatementParser {
     }
     if (headerIndex < 0) {
       throw const StatementImportException(
-        'This is not a supported M-Pesa CSV. Required columns: Receipt No., Completion Time, Details, Paid In, Withdrawn, Balance.',
+        'This is not a supported financial-statement CSV. The currently supported M-Pesa layout needs: Receipt No., Completion Time, Details, Paid In, Withdrawn, Balance.',
       );
     }
     int col(List<String> aliases) => headers.indexWhere(aliases.contains);

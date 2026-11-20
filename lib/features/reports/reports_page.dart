@@ -2,6 +2,8 @@ import 'package:file_saver/file_saver.dart';
 import 'package:flutter/material.dart';
 
 import '../../app_controller.dart';
+import '../../core/mpesa/models.dart';
+import '../../core/reports/consolidated_report.dart';
 import '../../core/reports/report_generator.dart';
 import '../../data/operations_repository.dart';
 import '../operations/operations_widgets.dart';
@@ -40,12 +42,24 @@ class _ReportsPageState extends State<ReportsPage> {
         through: through,
       );
       final balances = repository.obligations();
+      final statements = widget.controller.store
+          .listMpesaStatements()
+          .map(
+            (summary) => widget.controller.store.loadMpesaStatement(summary.id),
+          )
+          .whereType<StoredStatement>()
+          .toList();
+      final report = const ConsolidatedReportBuilder().build(
+        profitAndLoss: summary,
+        statements: statements,
+        obligations: balances,
+      );
       final generator = const ReportGenerator();
       final bytes = asPdf
-          ? await generator.profitAndLossPdf(summary, balances)
-          : generator.profitAndLossXlsx(summary, balances);
+          ? await generator.consolidatedPdf(report)
+          : generator.consolidatedXlsx(report);
       final saved = await FileSaver.instance.saveAs(
-        name: 'hesabu-summary-${through.year}',
+        name: 'hesabu-business-report-${through.year}',
         bytes: bytes,
         fileExtension: asPdf ? 'pdf' : 'xlsx',
         mimeType: asPdf ? MimeType.pdf : MimeType.microsoftExcel,
@@ -75,7 +89,7 @@ class _ReportsPageState extends State<ReportsPage> {
     final open = rows.where((row) => !row.isSettled).length;
     return OperationsPageFrame(
       title: 'Export reports',
-      subtitle: 'Create a local year-to-date summary from saved sales, expenses and balances.',
+      subtitle: 'Create a local visual year-to-date report from saved business results.',
       actions: [
         FilledButton.icon(
           onPressed: _busy ? null : () => _save(asPdf: true),
@@ -98,7 +112,7 @@ class _ReportsPageState extends State<ReportsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                'The report uses local records only and opens the device save dialog. It includes year-to-date sales, expenses, operating surplus, and open debtor/creditor balances.',
+                'The report uses local results only and opens the device save dialog. It includes key sales/expense figures, M-Pesa cash movement, visual charts, review flags and open balances. Raw statement rows are not included by default.',
               ),
               const SizedBox(height: 8),
               Text('$open open balance records will be included.'),

@@ -33,7 +33,10 @@ class LocalStatementPicker {
     }
     final file = await openFile(
       acceptedTypeGroups: const [
-        XTypeGroup(label: 'M-Pesa statements', extensions: ['pdf', 'csv']),
+        XTypeGroup(
+          label: 'Financial statements (M-Pesa currently supported)',
+          extensions: ['pdf', 'csv'],
+        ),
       ],
     );
     if (file == null) return null;

@@ -23,7 +23,7 @@ class DashboardPage extends StatelessWidget {
               ? tool.page != null
                     ? 'This tool is available in the paid demo. Enable Preview paid plan in Settings; no payment is collected.'
                     : 'This card previews paid access. You can switch to the paid demo in Settings; no payment is collected. The tool itself arrives in Stage ${tool.stage}.'
-              : 'This tool will be built in Stage ${tool.stage}. M-Pesa analysis is available from the dashboard; this tool is still a preview.',
+              : 'This tool will be built in Stage ${tool.stage}. Financial statement analysis is available from the dashboard; this tool is still a preview.',
         ),
         actions: [
           TextButton(
@@ -61,7 +61,7 @@ class DashboardPage extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         const Text(
-          'M-Pesa and Customer performance are ready. More tools are coming soon.',
+          'Financial statements and customer performance are ready. More sources are coming soon.',
         ),
         const SizedBox(height: 16),
         LayoutBuilder(
