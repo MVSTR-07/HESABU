@@ -58,41 +58,74 @@ class _OverviewInfo extends StatelessWidget {
         children: [
           Text('Inside HESABU', style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: 6),
-          const Text('Useful features, private analysis and occasional member rewards—no external ads.'),
+          const Text(
+            'Useful features, private analysis and occasional member rewards—no external ads.',
+          ),
           const SizedBox(height: 18),
           Wrap(
-        spacing: 28,
-        runSpacing: 18,
-        children: [
-          SizedBox(
-            width: 270,
-            child: _item(context, Icons.lock_outline, 'Private by design', 'Your business data stays encrypted on this device.'),
-          ),
-          SizedBox(
-            width: 270,
-            child: _item(context, Icons.insights_outlined, 'Plain local analysis', 'Clear summaries and trends without sending raw records away.'),
-          ),
-          SizedBox(
-            width: 270,
-            child: _item(context, Icons.card_giftcard_outlined, 'Member rewards', 'Invite another business when a reward event is active and earn credit toward a future subscription or tool.'),
-          ),
-        ],
+            spacing: 28,
+            runSpacing: 18,
+            children: [
+              SizedBox(
+                width: 270,
+                child: _item(
+                  context,
+                  Icons.lock_outline,
+                  'Private by design',
+                  'Your business data stays encrypted on this device.',
+                ),
+              ),
+              SizedBox(
+                width: 270,
+                child: _item(
+                  context,
+                  Icons.insights_outlined,
+                  'Plain local analysis',
+                  'Clear summaries and trends without sending raw records away.',
+                ),
+              ),
+              SizedBox(
+                width: 270,
+                child: _item(
+                  context,
+                  Icons.card_giftcard_outlined,
+                  'Member rewards',
+                  'Invite another business when a reward event is active and earn credit toward a future subscription or tool.',
+                ),
+              ),
+            ],
           ),
         ],
       ),
     ),
   );
 
-  static Widget _item(BuildContext context, IconData icon, String title, String body) =>
-      Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Icon(icon, color: Theme.of(context).colorScheme.secondary),
-        const SizedBox(width: 10),
-        Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text(body),
-        ])),
-      ]);
+  static Widget _item(
+    BuildContext context,
+    IconData icon,
+    String title,
+    String body,
+  ) => Row(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Icon(icon, color: Theme.of(context).colorScheme.secondary),
+      const SizedBox(width: 10),
+      Expanded(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.titleSmall
+                  ?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: 4),
+            Text(body),
+          ],
+        ),
+      ),
+    ],
+  );
 }
 
 class _SessionGate extends StatelessWidget {
@@ -106,11 +139,19 @@ class _SessionGate extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(Icons.lock_outline, color: Theme.of(context).colorScheme.secondary),
+          Icon(
+            Icons.lock_outline,
+            color: Theme.of(context).colorScheme.secondary,
+          ),
           const SizedBox(height: 12),
-          Text('Create a workspace and session first', style: Theme.of(context).textTheme.titleLarge),
+          Text(
+            'Create a workspace and session first',
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
           const SizedBox(height: 8),
-          const Text('Your analysis tools appear only inside a private session. This keeps each client job separated, reviewable and easy to clear when finished.'),
+          const Text(
+            'Your analysis tools appear only inside a private session. This keeps each client job separated, reviewable and easy to clear when finished.',
+          ),
           const SizedBox(height: 16),
           FilledButton.icon(
             onPressed: () => controller.navigate(AppPage.workspaces),
@@ -142,7 +183,9 @@ class _DashboardAnalytics extends StatelessWidget {
         ),
         _MetricCard(
           title: 'Total expenses',
-          value: statements.isEmpty ? 'KES 0' : 'KES ${statements.length * 480}',
+          value: statements.isEmpty
+              ? 'KES 0'
+              : 'KES ${statements.length * 480}',
           caption: 'For the selected period',
           icon: Icons.north_east,
         ),
@@ -154,12 +197,15 @@ class _DashboardAnalytics extends StatelessWidget {
           accent: true,
         ),
       ];
-      final metricWidth = compact ? constraints.maxWidth : (constraints.maxWidth - 28) / 3;
+      final metricWidth = compact
+          ? constraints.maxWidth
+          : (constraints.maxWidth - 28) / 3;
       final metricGrid = Wrap(
         spacing: 14,
         runSpacing: 14,
         children: [
-          for (final card in cards) SizedBox(width: metricWidth, height: 132, child: card),
+          for (final card in cards)
+            SizedBox(width: metricWidth, height: 132, child: card),
         ],
       );
       final charts = compact
@@ -167,19 +213,40 @@ class _DashboardAnalytics extends StatelessWidget {
               children: const [
                 _ChartPanel(title: 'Cash in / out', kind: _ChartKind.donut),
                 SizedBox(height: 14),
-                _ChartPanel(title: 'Monthly income vs expenses', kind: _ChartKind.bars),
+                _ChartPanel(
+                  title: 'Monthly income vs expenses',
+                  kind: _ChartKind.bars,
+                ),
                 SizedBox(height: 14),
-                _ChartPanel(title: 'Revenue / balance trend', kind: _ChartKind.line),
+                _ChartPanel(
+                  title: 'Revenue / balance trend',
+                  kind: _ChartKind.line,
+                ),
               ],
             )
           : Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Expanded(child: _ChartPanel(title: 'Cash in / out', kind: _ChartKind.donut)),
+                Expanded(
+                  child: _ChartPanel(
+                    title: 'Cash in / out',
+                    kind: _ChartKind.donut,
+                  ),
+                ),
                 SizedBox(width: 14),
-                Expanded(child: _ChartPanel(title: 'Monthly income vs expenses', kind: _ChartKind.bars)),
+                Expanded(
+                  child: _ChartPanel(
+                    title: 'Monthly income vs expenses',
+                    kind: _ChartKind.bars,
+                  ),
+                ),
                 SizedBox(width: 14),
-                Expanded(child: _ChartPanel(title: 'Revenue / balance trend', kind: _ChartKind.line)),
+                Expanded(
+                  child: _ChartPanel(
+                    title: 'Revenue / balance trend',
+                    kind: _ChartKind.line,
+                  ),
+                ),
               ],
             );
       return Column(
@@ -191,7 +258,13 @@ class _DashboardAnalytics extends StatelessWidget {
 }
 
 class _MetricCard extends StatelessWidget {
-  const _MetricCard({required this.title, required this.value, required this.caption, required this.icon, this.accent = false});
+  const _MetricCard({
+    required this.title,
+    required this.value,
+    required this.caption,
+    required this.icon,
+    this.accent = false,
+  });
   final String title;
   final String value;
   final String caption;
@@ -208,22 +281,39 @@ class _MetricCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            Icon(icon, size: 16, color: accent ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary),
-            const SizedBox(width: 7),
-            Expanded(
-              child: Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.labelLarge,
+          Row(
+            children: [
+              Icon(
+                icon,
+                size: 16,
+                color: accent
+                    ? Theme.of(context).colorScheme.secondary
+                    : Theme.of(context).colorScheme.primary,
               ),
-            ),
-          ]),
+              const SizedBox(width: 7),
+              Expanded(
+                child: Text(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
+              ),
+            ],
+          ),
           const Spacer(),
-          Text(value, style: Theme.of(context).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            value,
+            style: Theme.of(context).textTheme.headlineSmall
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 3),
-          Text(caption, maxLines: 1, overflow: TextOverflow.ellipsis, style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            caption,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     ),
@@ -247,7 +337,11 @@ class _ChartPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleSmall
+                ?.copyWith(fontWeight: FontWeight.w700),
+          ),
           const SizedBox(height: 14),
           RepaintBoundary(
             child: SizedBox(
@@ -259,7 +353,12 @@ class _ChartPanel extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 5),
-          Text(kind == _ChartKind.donut ? 'Money in   Money out' : 'Income   Expenses', style: Theme.of(context).textTheme.bodySmall),
+          Text(
+            kind == _ChartKind.donut
+                ? 'Money in   Money out'
+                : 'Income   Expenses',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
         ],
       ),
     ),
@@ -273,13 +372,33 @@ class _ChartPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final primary = Paint()..color = scheme.primary..strokeWidth = 7..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
-    final secondary = Paint()..color = scheme.secondary..strokeWidth = 7..style = PaintingStyle.stroke..strokeCap = StrokeCap.round;
+    final primary = Paint()
+      ..color = scheme.primary
+      ..strokeWidth = 7
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
+    final secondary = Paint()
+      ..color = scheme.secondary
+      ..strokeWidth = 7
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round;
     if (kind == _ChartKind.donut) {
       final center = Offset(size.width * .28, size.height / 2);
       final radius = size.height * .32;
-      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), -.9, 3.8, false, primary);
-      canvas.drawArc(Rect.fromCircle(center: center, radius: radius), 2.9, 2.1, false, secondary);
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        -.9,
+        3.8,
+        false,
+        primary,
+      );
+      canvas.drawArc(
+        Rect.fromCircle(center: center, radius: radius),
+        2.9,
+        2.1,
+        false,
+        secondary,
+      );
       return;
     }
     if (kind == _ChartKind.bars) {
@@ -287,7 +406,13 @@ class _ChartPainter extends CustomPainter {
       for (var i = 0; i < values.length; i++) {
         final x = 12 + i * (size.width - 30) / values.length;
         final h = size.height * values[i];
-        canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(x, size.height - h, 12, h), const Radius.circular(6)), Paint()..color = i.isEven ? primary.color : secondary.color);
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(x, size.height - h, 12, h),
+            const Radius.circular(6),
+          ),
+          Paint()..color = i.isEven ? primary.color : secondary.color,
+        );
       }
       return;
     }
@@ -304,7 +429,8 @@ class _ChartPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant _ChartPainter oldDelegate) => oldDelegate.kind != kind || oldDelegate.scheme != scheme;
+  bool shouldRepaint(covariant _ChartPainter oldDelegate) =>
+      oldDelegate.kind != kind || oldDelegate.scheme != scheme;
 }
 
 class _DashboardSummary extends StatelessWidget {
@@ -315,6 +441,7 @@ class _DashboardSummary extends StatelessWidget {
     child: LayoutBuilder(
       builder: (context, constraints) {
         final wide = constraints.maxWidth > 680;
+        final activeSession = controller.workspaces.activeSession();
         final content = Padding(
           padding: EdgeInsets.all(wide ? 30 : 22),
           child: Column(
@@ -346,6 +473,8 @@ class _DashboardSummary extends StatelessWidget {
                 Text(
                   'Active workspace: ${controller.workspaces.activeWorkspace()!.name}',
                 ),
+                if (activeSession != null)
+                  Text('Active session: ${activeSession.name}'),
                 const SizedBox(height: 10),
               ],
               Wrap(
@@ -383,6 +512,12 @@ class _DashboardSummary extends StatelessWidget {
                           : 'Switch workspace',
                     ),
                   ),
+                  if (activeSession != null)
+                    FilledButton.tonalIcon(
+                      onPressed: () => controller.navigate(AppPage.tools),
+                      icon: const Icon(Icons.play_arrow_outlined, size: 18),
+                      label: const Text('Resume session'),
+                    ),
                   Chip(
                     label: Text(
                       controller.paid ? 'Paid demo · no billing' : 'Free demo',

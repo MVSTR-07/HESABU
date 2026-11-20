@@ -320,6 +320,13 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
     contentPadding: EdgeInsets.zero,
     title: Text(session.name),
     subtitle: Text(session.state.name),
+    onTap: session.state == AnalysisSessionState.active
+        ? () {
+            _repository.selectSession(session.id);
+            widget.controller.refresh();
+            widget.controller.navigate(AppPage.tools);
+          }
+        : null,
     trailing: session.state == AnalysisSessionState.active
         ? Wrap(
             spacing: 4,
