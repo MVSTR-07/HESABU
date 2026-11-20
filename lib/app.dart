@@ -76,14 +76,16 @@ class _Workspace extends StatelessWidget {
         (controller.page == AppPage.dashboard ||
             controller.page == AppPage.settings);
     return PopScope(
-      // Android back/gesture returns from a tool or management page to the
-      // dashboard instead of closing the app unexpectedly.
+      // Android back/gesture returns from a tool to the session's tool
+      // catalogue instead of closing the app unexpectedly.
       canPop:
           controller.page == AppPage.dashboard ||
           controller.page == AppPage.intro,
       onPopInvokedWithResult: (didPop, _) {
         if (!didPop && controller.page != AppPage.dashboard) {
-          controller.navigate(AppPage.dashboard);
+          controller.navigate(
+            _isToolPage(controller.page) ? AppPage.tools : AppPage.dashboard,
+          );
         }
       },
       child: HesabuBackdrop(
@@ -95,11 +97,11 @@ class _Workspace extends StatelessWidget {
             toolbarHeight: 76,
             leading: _isToolPage(controller.page)
                 ? IconButton(
-                    tooltip: 'Back to dashboard',
+                    tooltip: 'Back to tools',
                     icon: const Icon(Icons.arrow_back),
                     onPressed: controller.busy
                         ? null
-                        : () => controller.navigate(AppPage.dashboard),
+                        : () => controller.navigate(AppPage.tools),
                   )
                 : null,
             title: const HesabuBrand(compact: true),
