@@ -13,11 +13,15 @@ class NcbaLoopStatementAdapter implements StatementAdapter {
       BankStatementParser(providerName: 'NCBA Loop').parseCsv(bytes);
   @override
   ParsedStatement parsePdfText(String text) =>
-      BankStatementParser(providerName: 'NCBA Loop')
-          .parsePdfBlocks(text.replaceAll('\r', ' '), blockStart: _blockStart);
+      BankStatementParser(providerName: 'NCBA Loop').parsePdfBlocks(
+        text
+            .replaceAll('\r', '')
+            .replaceFirst(RegExp(r'\n\d+\s+of\s+\d+.*', multiLine: true), ''),
+        blockStart: _blockStart,
+      );
 }
 
 final _blockStart = RegExp(
-  r'(?<!\d)(\d{1,2}\s+[A-Za-z]{3}\s+\d{2,4})(?=\s)',
+  r'(?m)^\s*(\d{1,2}\s+[A-Za-z]{3}\s+\d{2,4})(?=\s)',
   caseSensitive: false,
 );
