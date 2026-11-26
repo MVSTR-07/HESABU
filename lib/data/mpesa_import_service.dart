@@ -41,7 +41,14 @@ class MpesaImportService {
     if (format == 'csv') {
       parsed = await _parseCsvOffThreadFor(bytes, provider);
     } else if (format == 'pdf') {
-      final text = await _pdfReader.read(bytes, password: password);
+      final reader = _pdfReader;
+      final text = reader is LocalPdfTextReader
+          ? await reader.readForProvider(
+              bytes,
+              password: password,
+              provider: provider,
+            )
+          : await _pdfReader.read(bytes, password: password);
       parsed = await _parsePdfTextOffThreadFor(text, provider);
     } else {
       throw const StatementImportException(

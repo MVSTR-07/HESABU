@@ -4,6 +4,7 @@ import 'package:pdfrx_engine/pdfrx_engine.dart';
 
 import '../core/mpesa/models.dart';
 import '../core/mpesa/pdf_table_layout.dart';
+import '../core/statements/statement_provider.dart';
 import 'pdf_table_rules.dart';
 
 abstract interface class PdfTextReader {
@@ -19,6 +20,27 @@ class LocalPdfTextReader implements PdfTextReader {
 
   @override
   Future<String> read(Uint8List bytes, {String? password}) async {
+    return _read(bytes, password: password, strictMpesaLayout: true);
+  }
+
+  /// Bank and wallet adapters have their own row layouts. They still use the
+  /// same local PDFium extraction, but must not be rejected by M-Pesa's table
+  /// geometry rules before their adapter can inspect the text.
+  Future<String> readForProvider(
+    Uint8List bytes, {
+    String? password,
+    required StatementProvider provider,
+  }) => _read(
+    bytes,
+    password: password,
+    strictMpesaLayout: provider == StatementProvider.mpesa,
+  );
+
+  Future<String> _read(
+    Uint8List bytes, {
+    String? password,
+    required bool strictMpesaLayout,
+  }) async {
     if (bytes.isEmpty) {
       throw const StatementImportException('The selected file is empty.');
     }
@@ -56,7 +78,7 @@ class LocalPdfTextReader implements PdfTextReader {
       for (final page in document.pages) {
         final extracted = await page.loadText();
         text.writeln(extracted?.fullText ?? '');
-        if (extracted != null) {
+        if (extracted != null && strictMpesaLayout) {
           final words = positionedPdfWords(extracted);
           try {
             final rules = await readStatementRules(document, page.pageNumber);
