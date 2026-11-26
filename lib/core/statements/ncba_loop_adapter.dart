@@ -22,6 +22,7 @@ class NcbaLoopStatementAdapter implements StatementAdapter {
 }
 
 final _blockStart = RegExp(
-  r'(?m)^\s*(\d{1,2}\s+[A-Za-z]{3}\s+\d{2,4})(?=\s)',
+  r'^\s*(\d{1,2}\s+[A-Za-z]{3}\s+\d{2,4})(?=\s)',
   caseSensitive: false,
+  multiLine: true,
 );
