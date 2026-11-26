@@ -6,8 +6,9 @@ import 'package:crypto/crypto.dart';
 import '../core/mpesa/analyser.dart';
 import '../core/mpesa/classifier.dart';
 import '../core/mpesa/models.dart';
-import '../core/mpesa/statement_parser.dart';
 import '../core/mpesa/ruled_statement_table.dart';
+import '../core/statements/statement_adapter_registry.dart';
+import '../core/statements/statement_provider.dart';
 import 'local_store.dart';
 import 'mpesa_pdf_reader.dart';
 
@@ -24,6 +25,7 @@ class MpesaImportService {
     required String format,
     required String label,
     String? password,
+    StatementProvider provider = StatementProvider.mpesa,
     AnomalyThresholds thresholds = const AnomalyThresholds(),
   }) async {
     if (bytes.isEmpty) {
@@ -37,13 +39,13 @@ class MpesaImportService {
     thresholds.validate();
     ParsedStatement parsed;
     if (format == 'csv') {
-      parsed = await _parseCsvOffThread(bytes);
+      parsed = await _parseCsvOffThreadFor(bytes, provider);
     } else if (format == 'pdf') {
       final text = await _pdfReader.read(bytes, password: password);
-      parsed = await _parsePdfTextOffThread(text);
+      parsed = await _parsePdfTextOffThreadFor(text, provider);
     } else {
       throw const StatementImportException(
-        'Choose a supported financial-statement PDF or CSV file. M-Pesa is the first supported source.',
+        'Choose a supported financial-statement PDF or CSV file.',
       );
     }
     final transactions = parsed.transactions
@@ -91,10 +93,19 @@ class MpesaImportService {
 
 // Keep isolate closures outside the service: no SQLite handles, UI state or PDF
 // password can accidentally enter an isolate's captured instance context.
-Future<ParsedStatement> _parseCsvOffThread(Uint8List bytes) =>
-    Isolate.run(() => const MpesaStatementParser().parseCsv(bytes));
-Future<ParsedStatement> _parsePdfTextOffThread(String text) =>
-    Isolate.run(() => const MpesaStatementParser().parsePdfText(text));
+Future<ParsedStatement> _parseCsvOffThreadFor(
+  Uint8List bytes,
+  StatementProvider provider,
+) => Isolate.run(
+  () => const StatementAdapterRegistry().adapterFor(provider).parseCsv(bytes),
+);
+Future<ParsedStatement> _parsePdfTextOffThreadFor(
+  String text,
+  StatementProvider provider,
+) => Isolate.run(
+  () =>
+      const StatementAdapterRegistry().adapterFor(provider).parsePdfText(text),
+);
 Future<MpesaResults> _analyseOffThread(
   List<MpesaTransaction> txs,
   AnomalyThresholds thresholds,

@@ -7,6 +7,7 @@ import '../../app_controller.dart';
 import '../../core/mpesa/models.dart';
 import '../../core/mpesa/statement_parser.dart' show parseMoney;
 import '../../core/sample_data.dart';
+import '../../core/statements/statement_provider.dart';
 import '../../data/local_statement_picker.dart';
 import '../../data/mpesa_import_service.dart';
 import '../../ui/formatters.dart';
@@ -21,6 +22,7 @@ class MpesaPage extends StatefulWidget {
     this.picker,
     this.service,
     this.importMode = true,
+    this.provider,
     super.key,
   });
   final AppController controller;
@@ -29,6 +31,7 @@ class MpesaPage extends StatefulWidget {
 
   /// Import mode is shown from Workspaces. Tool mode is analysis-only.
   final bool importMode;
+  final StatementProvider? provider;
   @override
   State<MpesaPage> createState() => _MpesaPageState();
 }
@@ -132,7 +135,7 @@ class _MpesaPageState extends State<MpesaPage> {
     }
     if (!['csv', 'pdf'].contains(format)) {
       throw const StatementImportException(
-        'Choose a supported financial-statement PDF or CSV file. M-Pesa is the first supported source.',
+        'Choose a supported financial-statement PDF or CSV file.',
       );
     }
     String? password;
@@ -151,6 +154,8 @@ class _MpesaPageState extends State<MpesaPage> {
         format: format,
         label: label,
         password: password,
+        provider:
+            widget.provider ?? widget.controller.selectedStatementProvider,
         thresholds: _thresholds,
       );
       if (!mounted) return;

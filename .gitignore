@@ -41,13 +41,14 @@ android/app/release/
 .vscode/settings.json
 
 # Statements and real business data must never enter Git, including PDF/CSV.
+.codex-attachments/
 *.pdf
 *.PDF
 *.csv
 *.CSV
 *.[pP][dD][fF]
 *.[cC][sS][vV]
-statements/
+/statements/
 /imports/
 *.xlsx
 *.XLSX

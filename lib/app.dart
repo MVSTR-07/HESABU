@@ -69,7 +69,10 @@ class _Workspace extends StatelessWidget {
       AppPage.imports => ImportsPage(controller: controller),
       AppPage.reports => ReportsPage(controller: controller),
       AppPage.workspaces => WorkspacesPage(controller: controller),
-      AppPage.statementImport => MpesaPage(controller: controller),
+      AppPage.statementImport => MpesaPage(
+        controller: controller,
+        provider: controller.selectedStatementProvider,
+      ),
     };
     final floatingNavigation = controller.signedIn;
     final visibleNavigation =

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'data/local_store.dart';
 import 'data/workspace_repository.dart';
 import 'data/account_security.dart';
+import 'core/statements/statement_provider.dart';
 
 enum AppPage {
   intro,
@@ -63,6 +64,7 @@ class AppController extends ChangeNotifier {
   bool busy = false;
   bool storageLocked = false;
   bool developerPreview = false;
+  StatementProvider selectedStatementProvider = StatementProvider.mpesa;
 
   void enterDeveloperPreview() {
     developerPreview = true;

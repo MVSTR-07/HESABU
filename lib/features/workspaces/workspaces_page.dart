@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 
 import '../../app_controller.dart';
 import '../../core/workspaces/workspace_models.dart';
+import '../../core/statements/statement_provider.dart';
 import '../../data/workspace_repository.dart';
 import '../../ui/shared.dart';
 
@@ -19,7 +20,7 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
 
   WorkspaceRepository get _repository => widget.controller.workspaces;
 
-  void _openDocumentImport() {
+  Future<void> _openDocumentImport() async {
     if (_repository.activeSession() == null) {
       setState(
         () => _message =
@@ -27,6 +28,24 @@ class _WorkspacesPageState extends State<WorkspacesPage> {
       );
       return;
     }
+    final provider = await showDialog<StatementProvider>(
+      context: context,
+      builder: (context) => SimpleDialog(
+        title: const Text('Which institution issued this statement?'),
+        children: [
+          for (final option in StatementProvider.values)
+            SimpleDialogOption(
+              onPressed: () => Navigator.of(context).pop(option),
+              child: ListTile(
+                title: Text(option.label),
+                subtitle: Text(option.description),
+              ),
+            ),
+        ],
+      ),
+    );
+    if (provider == null || !mounted) return;
+    widget.controller.selectedStatementProvider = provider;
     widget.controller.navigate(AppPage.statementImport);
   }
 
