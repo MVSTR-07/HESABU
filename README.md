@@ -7,17 +7,18 @@ records into useful answers, while keeping business data on the device. The
 first release is being built for Windows, with Android support planned from the
 same Dart codebase.
 
-I am building this repository in stages. The M-Pesa, customer, stock, sales and
-expense tools are in place, and I am continuing to expand the financial tools
-and test the Windows and Android experience. HESABU is not yet a finished
+I am building this repository in stages. The financial statement, customer,
+stock, sales and expense tools are in place, and I am continuing to expand the
+financial tools and test the Windows and Android experience. HESABU is not yet a finished
 published product.
 
 ## What you can explore
 
 - **Financial statements:** import supported CSV or text-based PDF statements
   and review money in and out, fees, activity patterns and rule-based flags.
-  M-Pesa is the first supported source; bank, wallet, card and POS connectors
-  are planned as separate tested adapters.
+  The importer uses an explicit institution adapter selected by the user:
+  Equity, M-Pesa, NCBA Loop or Co-op YEA. More bank, wallet, card and POS
+  adapters can be added independently without replacing the existing parsers.
 - **Customer performance:** review payment history, customer segments,
   concentration and personalised drop-off signals.
 - **Stock, sales and expenses:** enter records locally and explore summaries.
