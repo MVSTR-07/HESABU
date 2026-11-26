@@ -176,7 +176,7 @@ class BankStatementParser {
 
   String _normaliseDate(String value) {
     final m = RegExp(
-      r'^(\d{1,2})[-/]([A-Za-z]{3}|\d{1,2})[-/](\d{2,4})\s+(.*)$',
+      r'^(\d{1,2})[-/\s]+([A-Za-z]{3}|\d{1,2})[-/\s]+(\d{2,4})\s+(.*)$',
     ).firstMatch(value);
     if (m == null) return value;
     const months = {

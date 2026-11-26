@@ -103,16 +103,43 @@ class MpesaImportService {
 Future<ParsedStatement> _parseCsvOffThreadFor(
   Uint8List bytes,
   StatementProvider provider,
-) => Isolate.run(
-  () => const StatementAdapterRegistry().adapterFor(provider).parseCsv(bytes),
-);
+) async {
+  try {
+    return await Isolate.run(
+      () =>
+          const StatementAdapterRegistry().adapterFor(provider).parseCsv(bytes),
+    );
+  } catch (error) {
+    _rethrowParserError(error);
+  }
+}
+
 Future<ParsedStatement> _parsePdfTextOffThreadFor(
   String text,
   StatementProvider provider,
-) => Isolate.run(
-  () =>
-      const StatementAdapterRegistry().adapterFor(provider).parsePdfText(text),
-);
+) async {
+  try {
+    return await Isolate.run(
+      () => const StatementAdapterRegistry()
+          .adapterFor(provider)
+          .parsePdfText(text),
+    );
+  } catch (error) {
+    _rethrowParserError(error);
+  }
+}
+
+Never _rethrowParserError(Object error) {
+  final message = error.toString();
+  final safe = RegExp(
+    r'(Row \d+ has [^.]+\.|No transaction rows were found[^.]*\.|No completed [^.]+\.|CSV [^.]+\.|The selected file is empty\.)',
+  ).firstMatch(message)?.group(1);
+  if (safe != null) throw StatementImportException(safe);
+  throw const StatementImportException(
+    'The statement could not be parsed. Check the selected institution and export a fresh CSV or text PDF.',
+  );
+}
+
 Future<MpesaResults> _analyseOffThread(
   List<MpesaTransaction> txs,
   AnomalyThresholds thresholds,
